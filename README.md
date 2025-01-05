@@ -5,7 +5,7 @@
 - Install STM32CubeIDE
 - Install STM32CubeProgrammer
 - Install STM32CubeMX
-- ST-LINK/V2
+- ST-LINK/V3
 
 ## Project Overview
 Note: Lots of the code is prewritten after setting up the project
