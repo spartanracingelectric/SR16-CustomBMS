@@ -15,19 +15,19 @@ void Wakeup_Idle(void) {
 	for (int i = 0; i < NUM_DEVICES; i++) {
 		LTC_nCS_Low();							   // Pull CS low
 		HAL_SPI_Transmit(&hspi1, &hex_ff, 1, 100); // Send byte 0xFF to wake LTC up
+		osDelay(1);
 		LTC_nCS_High();							   // Pull CS high
 	}
 }
 
 // wake up sleep
 void Wakeup_Sleep(void) {
-
-	for (int i = 0; i < NUM_DEVICES; i++) {
-		LTC_nCS_Low();
-		HAL_Delay(1);
-		LTC_nCS_High();
-		HAL_Delay(1);
-	}
+    for (int i = 0; i < NUM_DEVICES; i++) {
+        LTC_nCS_Low();
+        osDelay(1);
+        LTC_nCS_High();
+        osDelay(1);
+    }
 }
 
 /* Read and store raw cell voltages at uint8_t 2d pointer */
