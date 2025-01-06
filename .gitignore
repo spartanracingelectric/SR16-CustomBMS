@@ -40,12 +40,6 @@
 *.obj
 *.exp
 
-# CubeMX generated files
-*.ioc
-/Drivers/
-/Middlewares/
-/Core/
-
 # CMake generated files
 CMakeFiles/
 /CMakeCache.txt
