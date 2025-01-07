@@ -3,7 +3,10 @@
 
 #include "main.h"
 
-#define MD_7KHZ_3KHZ 2
+#define MD_27KHZ_FAST 1
+#define MD_7KHZ_NORMAL 2
+#define MD_26HZ_FILTERED 3
+
 #define CELL_CH_ALL 0
 #define DCP_DISABLED 0
 
