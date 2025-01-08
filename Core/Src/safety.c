@@ -119,7 +119,8 @@ void Cell_Summary_Voltage(struct batteryModule *batt, uint8_t *fault,
 	}
 }
 
-void Cell_Summary_Temperature(struct batteryModule *batt) {
+void Cell_Summary_Temperature(struct batteryModule *batt, uint8_t *fault,
+		uint8_t *warnings) {
 	batt->cell_temp_highest = batt->cell_temp[0];
 	batt->cell_temp_lowest = batt->cell_temp[0];
 

@@ -1,17 +1,18 @@
 #include "print.h"
-
+#include "usart.h"
 void print(uint8_t len, uint16_t *read_temp) {
-	char buf[20];
-	char out_buf[2048] = "";
-	char char_to_str[2];
-	char_to_str[0] = '\n';
-	char_to_str[1] = '\0';
+    char buf[128]; //buffer
+    uint16_t buf_length;
 
-	for (uint8_t i = 0; i < len; i++) {
-		sprintf(buf, "C%u:%u/10000", i + 1, read_temp[i]);
-		strncat(out_buf, buf, 20);
-		strncat(out_buf, char_to_str, 2);
-	}
-	strncat(out_buf, char_to_str, 2);
-	USB_Transmit(out_buf, strlen(out_buf));
+    for (uint8_t i = 0; i < len; i++) {
+
+        buf_length = sprintf(buf, "C%u:%u/10000\n", i + 1, read_temp[i]);
+
+
+        HAL_UART_Transmit(&huart1, (uint8_t *)buf, buf_length, HAL_MAX_DELAY);
+    }
+
+
+    char newline[] = "\n";
+    HAL_UART_Transmit(&huart1, (uint8_t *)newline, sizeof(newline) - 1, HAL_MAX_DELAY);
 }
