@@ -140,7 +140,7 @@ int main(void)
 
 	//Sending a fault signal and reseting it
 	HAL_GPIO_WritePin(Fault_GPIO_Port, Fault_Pin, GPIO_PIN_SET);
-	HAL_Delay(500);
+	osDelay(500);
 	HAL_GPIO_WritePin(Fault_GPIO_Port, Fault_Pin, GPIO_PIN_RESET);
 
 	//initializing variables
@@ -159,7 +159,7 @@ int main(void)
 	for (uint8_t i = tempindex; i < indexpause; i++) {
 		Wakeup_Idle();
 		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-		HAL_Delay(3);
+		osDelay(3);
 	}
 	Wakeup_Idle();
 	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[0]);
@@ -170,7 +170,7 @@ int main(void)
 	for (uint8_t i = indexpause; i < NUM_THERM_PER_MOD; i++) {
 		Wakeup_Idle();
 		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-		HAL_Delay(3);
+		osDelay(3);
 	}
 	Wakeup_Idle();
 	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[1]);

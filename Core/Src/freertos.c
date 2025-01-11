@@ -268,22 +268,22 @@ void Start_Read_Volt(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  if (osMutexAcquire(VoltageQueueMutexHandle, osWaitForever) == osOK) {
-		  Read_Volt(modPackInfo.cell_volt);
+//	  if (osMutexAcquire(VoltageQueueMutexHandle, osWaitForever) == osOK) {
+//		  Read_Volt(modPackInfo.cell_volt);
 
 		  uint16_t temp_voltages[NUM_CELLS];
-		  memcpy(temp_voltages, modPackInfo.cell_volt, sizeof(temp_voltages));
+//		  memcpy(temp_voltages, modPackInfo.cell_volt, sizeof(temp_voltages));
 
-		  if (xQueueSend(VoltQueueHandle, temp_voltages, 0) != pdPASS) {
-		      printf("Failed to send voltage array to voltage queue.\n");
-		  }
+//		  if (xQueueSend(VoltQueueHandle, temp_voltages, 0) != pdPASS) {
+//		      printf("Failed to send voltage array to voltage queue.\n");
+//		  }
 
 	  // ミューテックス解放
-	  osMutexRelease(VoltageQueueMutexHandle);
-	  }
-	  else{
-		  printf("Failed to acquire mutex for voltage queue!\n");
-	  }
+//	  osMutexRelease(VoltageQueueMutexHandle);
+//	  }
+//	  else{
+//		  printf("Failed to acquire mutex for voltage queue!\n");
+//	  }
 
 	  osDelay(500);
   /* USER CODE END Start_Read_Volt */
@@ -302,11 +302,11 @@ void Start_Read_Temp(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  if (osMutexAcquire(TempQueueMutexHandle, osWaitForever) == osOK) {
+//	  if (osMutexAcquire(TempQueueMutexHandle, osWaitForever) == osOK) {
 		  for (uint8_t i = tempindex; i < indexpause; i++) {
 			  Wakeup_Idle();
 			  Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-			  HAL_Delay(3);
+			  osDelay(2);
 		  }
 		  if (indexpause == 8) {
 			  Wakeup_Idle();
@@ -324,19 +324,19 @@ void Start_Read_Temp(void *argument)
 			  tempindex = 0;
 		  }
 
-		  uint16_t temp_Temperatures[NUM_THERM_TOTAL];
-		  memcpy(temp_Temperatures, modPackInfo.cell_temp, sizeof(temp_Temperatures));
+//		  uint16_t temp_Temperatures[NUM_THERM_TOTAL];
+//		  memcpy(temp_Temperatures, modPackInfo.cell_temp, sizeof(temp_Temperatures));
+//
+//		  if (xQueueSend(TempQueueHandle, temp_Temperatures, 0) != pdPASS) {
+//		      printf("Failed to send voltage array to temperature queue.\n");
+//		  }
 
-		  if (xQueueSend(TempQueueHandle, temp_Temperatures, 0) != pdPASS) {
-		      printf("Failed to send voltage array to temperature queue.\n");
-		  }
-
-	  // ミューテックス解放
-	  osMutexRelease(TempQueueMutexHandle);
-	  }
-	  else{
-		  printf("Failed to acquire temperature queue mutex!\n");
-	  }
+//	  // ミューテックス解放
+//	  osMutexRelease(TempQueueMutexHandle);
+//	  }
+//	  else{
+//		  printf("Failed to acquire temperature queue mutex!\n");
+//	  }
 
 	  osDelay(500);
   }
