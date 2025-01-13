@@ -20,7 +20,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
 #include "task.h"
-#include "main.h"
+//#include "main.h"
+#include "module.h"
+#include "can.h"
+#include "safety.h"
+#include "adc.h"
+#include "spi.h"
 #include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
