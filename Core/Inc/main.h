@@ -89,6 +89,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Shunt_Signal_Pin GPIO_PIN_3
+#define Shunt_Signal_GPIO_Port GPIOC
 #define LTC_nCS_Pin GPIO_PIN_4
 #define LTC_nCS_GPIO_Port GPIOA
 #define MCU_ADC_VSENSE_Pin GPIO_PIN_5

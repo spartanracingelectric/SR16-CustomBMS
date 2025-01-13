@@ -151,7 +151,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     PC2     ------> ADC2_IN12
     PC3     ------> ADC2_IN13
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|Shunt_Signal_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -195,7 +195,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PC2     ------> ADC2_IN12
     PC3     ------> ADC2_IN13
     */
-    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|Shunt_Signal_Pin);
 
   /* USER CODE BEGIN ADC2_MspDeInit 1 */
 
