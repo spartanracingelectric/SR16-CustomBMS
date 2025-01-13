@@ -141,7 +141,7 @@ void StartCellSummaryTemperature(void *argument);
 void StartStartBalance(void *argument);
 void StartCANVolt(void *argument);
 void StartCANTemp(void *argument);
-void StartCANVoltSummary(void *argument);
+void StartCANSummary(void *argument);
 void StartCANFault(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -198,7 +198,7 @@ void MX_FREERTOS_Init(void) {
   CANTempHandle = osThreadNew(StartCANTemp, NULL, &CANTemp_attributes);
 
   /* creation of CANSummary */
-  CANSummaryHandle = osThreadNew(StartCANVoltSummary, NULL, &CANSummary_attributes);
+  CANSummaryHandle = osThreadNew(StartCANSummary, NULL, &CANSummary_attributes);
 
   /* creation of CANFault */
   CANFaultHandle = osThreadNew(StartCANFault, NULL, &CANFault_attributes);
@@ -418,23 +418,22 @@ void StartCANTemp(void *argument)
   /* USER CODE END StartCANTemp */
 }
 
-/* USER CODE BEGIN Header_StartCANVoltSummary */
+/* USER CODE BEGIN Header_StartCANSummary */
 /**
-* @brief Function implementing the CANVoltSummary thread.
+* @brief Function implementing the CANSummary thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartCANVoltSummary */
-void StartCANVoltSummary(void *argument)
+/* USER CODE END Header_StartCANSummary */
+void StartCANSummary(void *argument)
 {
-  /* USER CODE BEGIN StartCANVoltSummary */
+  /* USER CODE BEGIN StartCANSummary */
   /* Infinite loop */
   for(;;)
   {
-	CAN_Send_Cell_Summary(&msg, &modPackInfo);
     osDelay(1);
   }
-  /* USER CODE END StartCANVoltSummary */
+  /* USER CODE END StartCANSummary */
 }
 
 /* USER CODE BEGIN Header_StartCANFault */
