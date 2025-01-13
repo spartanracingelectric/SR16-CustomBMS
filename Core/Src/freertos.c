@@ -263,7 +263,7 @@ void StartReadVolt(void *argument)
 	  //		  printf("Failed to acquire mutex for voltage queue!\n");
 	  //	  }
 
-	  	  osDelay(500);
+	  	  osDelay(205);
   }
   /* USER CODE END StartReadVolt */
 }
@@ -317,7 +317,6 @@ void StartReadTemp(void *argument)
 //		  printf("Failed to acquire temperature queue mutex!\n");
 //	  }
 
-  osDelay(500);
   }
   /* USER CODE END StartReadTemp */
 }
@@ -338,7 +337,7 @@ void StartCellSummaryVoltage(void *argument)
 	Cell_Summary_Voltage(&modPackInfo, &safetyFaults,
 	  					&safetyWarnings, &safetyStates, &low_volt_hysteresis,
 	  					&high_volt_hysteresis, &cell_imbalance_hysteresis);
-    osDelay(1);
+    osDelay(205);
   }
   /* USER CODE END StartCellSummaryVoltage */
 }
@@ -357,7 +356,7 @@ void StartCellSummaryTemperature(void *argument)
   for(;;)
   {
 	Cell_Summary_Temperature(&modPackInfo, &safetyFaults,&safetyWarnings);
-    osDelay(1);
+    osDelay(2);
   }
   /* USER CODE END StartCellSummaryTemperature */
 }
@@ -394,7 +393,7 @@ void StartCANVolt(void *argument)
   for(;;)
   {
 	CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
-    osDelay(1);
+    osDelay(300);
   }
   /* USER CODE END StartCANVolt */
 }
@@ -413,7 +412,7 @@ void StartCANTemp(void *argument)
   for(;;)
   {
 	CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
-    osDelay(1);
+    osDelay(300);
   }
   /* USER CODE END StartCANTemp */
 }
@@ -431,7 +430,8 @@ void StartCANSummary(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	CAN_Send_Cell_Summary(&msg, &modPackInfo);
+    osDelay(300);
   }
   /* USER CODE END StartCANSummary */
 }
@@ -449,7 +449,9 @@ void StartCANFault(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
+	  					&safetyWarnings, &safetyStates);
+    osDelay(300);
   }
   /* USER CODE END StartCANFault */
 }

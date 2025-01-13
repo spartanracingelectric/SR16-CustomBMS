@@ -175,6 +175,7 @@ void CAN_Send_Voltage(struct CANMessage *ptr, uint16_t *read_volt) {
 void CAN_Send_Temperature(struct CANMessage *ptr, uint16_t *read_temp) {
 	uint16_t CAN_ID = 0x680;
 	Set_CAN_Id(ptr, CAN_ID);
+	Get_Actual_Temps(dev_idx, tempindex, (uint16_t*) read_temp, data); //+5 because vref is the last reg
 	for (uint8_t i = 0; i < NUM_THERM_TOTAL; i++) {
 		if (i % 4 == 0) {
 			uint8_t temp_volt = i;
