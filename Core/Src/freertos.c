@@ -18,23 +18,50 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "FreeRTOS.h"
-#include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
+#include "adc.h"
+#include "can.h"
+#include "dma.h"
+#include "spi.h"
+#include "tim.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "string.h"
+#include "6811.h"
+#include "print.h"
+#include "module.h"
+#include "safety.h"
+#include "balance.h"
+
 typedef struct {
     uint8_t tempIndex;            // サーミスタインデックス
     uint16_t readTemp[NUM_DEVICES]; // デ�?イス�?��?��?�温度データ
     uint16_t readAuxReg[NUM_DEVICES * NUM_AUX_GROUP]; // 補助レジスタデータ
 } TempData_t;
+
+
+
 struct batteryModule modPackInfo;
+
+static uint8_t BMS_MUX_PAUSE[2][6] = { { 0x69, 0x28, 0x0F, 0x09, 0x7F, 0xF9 }, {
+		0x69, 0x08, 0x0F, 0x09, 0x7F, 0xF9 } };
+
 struct CANMessage msg;
 uint8_t safetyFaults = 0;
 uint8_t safetyWarnings = 0;
 uint8_t safetyStates = 0;
+
+uint8_t tempindex = 0;
+uint8_t indexpause = 8;
+uint8_t low_volt_hysteresis = 0;
+uint8_t high_volt_hysteresis = 0;
+uint8_t cell_imbalance_hysteresis = 0;
+
+
 
 /* USER CODE END Includes */
 
@@ -55,7 +82,18 @@ uint8_t safetyStates = 0;
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+typedef struct _GpioTimePacket {
+	GPIO_TypeDef *gpio_port; //Port
+	uint16_t gpio_pin;	//Pin number
+	uint32_t ts_prev;	//Previous timestamp
+	uint32_t ts_curr; 	//Current timestamp
+} GpioTimePacket;
 
+typedef struct _TimerPacket {
+	uint32_t ts_prev;	//Previous timestamp
+	uint32_t ts_curr; 	//Current timestamp
+	uint32_t delay;		//Amount to delay
+} TimerPacket;
 /* USER CODE END Variables */
 /* Definitions for HartBeatLED */
 osThreadId_t HartBeatLEDHandle;
@@ -101,7 +139,7 @@ const osThreadAttr_t StartBalance_attributes = {
 };
 /* Definitions for CANVolt */
 osThreadId_t CANVoltHandle;
-const osThreadAttr_t CANVolt_attributes = {
+const osThreadAttr_t CANVolt_attributes = {a
   .name = "CANVolt",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
@@ -130,7 +168,11 @@ const osThreadAttr_t CANFault_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void SystemClock_Config(void);
+void GpioTimePacket_Init(GpioTimePacket *gtp, GPIO_TypeDef *port, uint16_t pin);
+void TimerPacket_Init(TimerPacket *tp, uint32_t delay);
+void GpioFixedToggle(GpioTimePacket *gtp, uint16_t update_ms);
+uint8_t TimerPacket_FixedPulse(TimerPacket *tp);
 /* USER CODE END FunctionPrototypes */
 
 void StartHartBeatLED(void *argument);
@@ -153,7 +195,13 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-
+	  MX_GPIO_Init();
+	  MX_ADC1_Init();
+	  MX_ADC2_Init();
+	  MX_TIM7_Init();
+	  MX_SPI1_Init();
+	  MX_CAN1_Init();
+	  MX_USART1_UART_Init();
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -214,6 +262,8 @@ void MX_FREERTOS_Init(void) {
 }
 
 /* USER CODE BEGIN Header_StartHartBeatLED */
+GpioTimePacket tp_led_heartbeat;
+TimerPacket timerpacket_ltc;
 /**
   * @brief  Function implementing the HartBeatLED thread.
   * @param  argument: Not used
@@ -223,10 +273,11 @@ void MX_FREERTOS_Init(void) {
 void StartHartBeatLED(void *argument)
 {
   /* USER CODE BEGIN StartHartBeatLED */
+
   /* Infinite loop */
   for(;;)
   {
-	  GpioFixedToggle(&tp_led_heartbeat, 1000); // Toggle heat beat LED every 1 sec
+	  GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS); // Toggle heat beat LED every 1 sec
 	  osDelay(1000);
 
   }

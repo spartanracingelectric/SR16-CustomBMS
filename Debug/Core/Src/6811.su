@@ -1,5 +1,5 @@
 ../Core/Src/6811.c:13:6:Wakeup_Idle	16	static
-../Core/Src/6811.c:23:6:Wakeup_Sleep	16	static
+../Core/Src/6811.c:24:6:Wakeup_Sleep	16	static
 ../Core/Src/6811.c:34:23:Read_Cell_Volt	64	dynamic
 ../Core/Src/6811.c:88:6:LTC6811_WRPWM	32	static
 ../Core/Src/6811.c:133:6:LTC6811_WRCFG	24	static

@@ -119,15 +119,15 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 /* USER CODE BEGIN 1 */
 
 HAL_StatusTypeDef CAN_Start() {
-	return HAL_CAN_Start(&hcan2);
+	return HAL_CAN_Start(&hcan1);
 }
 
 HAL_StatusTypeDef CAN_Activate() {
-	return HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
+	return HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
 HAL_StatusTypeDef CAN_Send(struct CANMessage *ptr) {
-	return HAL_CAN_AddTxMessage(&hcan2, &ptr->TxHeader, (uint8_t*) ptr->data,
+	return HAL_CAN_AddTxMessage(&hcan1, &ptr->TxHeader, (uint8_t*) ptr->data,
 			&ptr->TxMailbox);
 }
 
@@ -175,7 +175,6 @@ void CAN_Send_Voltage(struct CANMessage *ptr, uint16_t *read_volt) {
 void CAN_Send_Temperature(struct CANMessage *ptr, uint16_t *read_temp) {
 	uint16_t CAN_ID = 0x680;
 	Set_CAN_Id(ptr, CAN_ID);
-	Get_Actual_Temps(dev_idx, tempindex, (uint16_t*) read_temp, data); //+5 because vref is the last reg
 	for (uint8_t i = 0; i < NUM_THERM_TOTAL; i++) {
 		if (i % 4 == 0) {
 			uint8_t temp_volt = i;
