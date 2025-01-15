@@ -26,6 +26,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "freertos.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -73,6 +74,7 @@ typedef struct _TimerPacket {
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
+static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 void GpioTimePacket_Init(GpioTimePacket *gtp, GPIO_TypeDef *port, uint16_t pin);
 void TimerPacket_Init(TimerPacket *tp, uint32_t delay);
@@ -131,6 +133,9 @@ int main(void)
   MX_SPI1_Init();
   MX_CAN1_Init();
   MX_USART1_UART_Init();
+
+  /* Initialize interrupts */
+  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 	CAN_SettingsInit(&msg); // Start CAN at 0x00
 	//Start timer
@@ -315,6 +320,20 @@ void SystemClock_Config(void)
   /** Configure the Systick interrupt time
   */
   __HAL_RCC_PLLI2S_ENABLE();
+}
+
+/**
+  * @brief NVIC Configuration.
+  * @retval None
+  */
+static void MX_NVIC_Init(void)
+{
+  /* DMA1_Channel2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+  /* DMA1_Channel3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
 }
 
 /* USER CODE BEGIN 4 */

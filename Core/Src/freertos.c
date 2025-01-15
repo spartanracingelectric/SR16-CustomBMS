@@ -18,15 +18,10 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include "FreeRTOS.h"
+#include "task.h"
 #include "main.h"
 #include "cmsis_os.h"
-#include "adc.h"
-#include "can.h"
-#include "dma.h"
-#include "spi.h"
-#include "tim.h"
-#include "usart.h"
-#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -35,6 +30,7 @@
 #include "print.h"
 #include "module.h"
 #include "safety.h"
+#include "can.h"
 #include "balance.h"
 
 typedef struct {
@@ -99,70 +95,70 @@ typedef struct _TimerPacket {
 osThreadId_t HartBeatLEDHandle;
 const osThreadAttr_t HartBeatLED_attributes = {
   .name = "HartBeatLED",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for ReadVolt */
 osThreadId_t ReadVoltHandle;
 const osThreadAttr_t ReadVolt_attributes = {
   .name = "ReadVolt",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for ReadTemp */
 osThreadId_t ReadTempHandle;
 const osThreadAttr_t ReadTemp_attributes = {
   .name = "ReadTemp",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for CellSummaryVolt */
 osThreadId_t CellSummaryVoltHandle;
 const osThreadAttr_t CellSummaryVolt_attributes = {
   .name = "CellSummaryVolt",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for CellSummaryTemp */
 osThreadId_t CellSummaryTempHandle;
 const osThreadAttr_t CellSummaryTemp_attributes = {
   .name = "CellSummaryTemp",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for StartBalance */
 osThreadId_t StartBalanceHandle;
 const osThreadAttr_t StartBalance_attributes = {
   .name = "StartBalance",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for CANVolt */
 osThreadId_t CANVoltHandle;
-const osThreadAttr_t CANVolt_attributes = {a
+const osThreadAttr_t CANVolt_attributes = {
   .name = "CANVolt",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for CANTemp */
 osThreadId_t CANTempHandle;
 const osThreadAttr_t CANTemp_attributes = {
   .name = "CANTemp",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for CANSummary */
 osThreadId_t CANSummaryHandle;
 const osThreadAttr_t CANSummary_attributes = {
   .name = "CANSummary",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for CANFault */
 osThreadId_t CANFaultHandle;
 const osThreadAttr_t CANFault_attributes = {
   .name = "CANFault",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 
@@ -297,24 +293,8 @@ void StartReadVolt(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  //	  if (osMutexAcquire(VoltageQueueMutexHandle, osWaitForever) == osOK) {
-	  		  Read_Volt(modPackInfo.cell_volt);
-
-//	  		  uint16_t temp_voltages[NUM_CELLS];
-//	  		  memcpy(temp_voltages, modPackInfo.cell_volt, sizeof(temp_voltages));
-//
-//	  		  if (xQueueSend(VoltQueueHandle, temp_voltages, 0) != pdPASS) {
-//	  		      printf("Failed to send voltage array to voltage queue.\n");
-//	  		  }
-
-	  	  // ミューテックス解放
-	  //	  osMutexRelease(VoltageQueueMutexHandle);
-	  //	  }
-	  //	  else{
-	  //		  printf("Failed to acquire mutex for voltage queue!\n");
-	  //	  }
-
-	  	  osDelay(205);
+	  	Read_Volt(modPackInfo.cell_volt);
+	  	osDelay(205);
   }
   /* USER CODE END StartReadVolt */
 }
@@ -332,11 +312,9 @@ void StartReadTemp(void *argument)
   /* Infinite loop */
   for(;;)
   {
-//	  if (osMutexAcquire(TempQueueMutexHandle, osWaitForever) == osOK) {
 	  for (uint8_t i = tempindex; i < indexpause; i++) {
 		  Wakeup_Idle();
 		  Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-		  osDelay(2);
 	  }
 	  if (indexpause == 8) {
 		  Wakeup_Idle();
@@ -353,21 +331,7 @@ void StartReadTemp(void *argument)
 		  indexpause = 8;
 		  tempindex = 0;
 	  }
-
-//		  uint16_t temp_Temperatures[NUM_THERM_TOTAL];
-//		  memcpy(temp_Temperatures, modPackInfo.cell_temp, sizeof(temp_Temperatures));
-//
-//		  if (xQueueSend(TempQueueHandle, temp_Temperatures, 0) != pdPASS) {
-//		      printf("Failed to send voltage array to temperature queue.\n");
-//		  }
-
-//	  // ミューテックス解放
-//	  osMutexRelease(TempQueueMutexHandle);
-//	  }
-//	  else{
-//		  printf("Failed to acquire temperature queue mutex!\n");
-//	  }
-
+	  osDelay(2);
   }
   /* USER CODE END StartReadTemp */
 }
@@ -388,7 +352,7 @@ void StartCellSummaryVoltage(void *argument)
 	Cell_Summary_Voltage(&modPackInfo, &safetyFaults,
 	  					&safetyWarnings, &safetyStates, &low_volt_hysteresis,
 	  					&high_volt_hysteresis, &cell_imbalance_hysteresis);
-    osDelay(205);
+    osDelay(300);
   }
   /* USER CODE END StartCellSummaryVoltage */
 }
@@ -407,7 +371,7 @@ void StartCellSummaryTemperature(void *argument)
   for(;;)
   {
 	Cell_Summary_Temperature(&modPackInfo, &safetyFaults,&safetyWarnings);
-    osDelay(2);
+    osDelay(300);
   }
   /* USER CODE END StartCellSummaryTemperature */
 }
@@ -444,7 +408,7 @@ void StartCANVolt(void *argument)
   for(;;)
   {
 	CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
-    osDelay(300);
+    osDelay(400);
   }
   /* USER CODE END StartCANVolt */
 }
@@ -463,7 +427,7 @@ void StartCANTemp(void *argument)
   for(;;)
   {
 	CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
-    osDelay(300);
+    osDelay(400);
   }
   /* USER CODE END StartCANTemp */
 }
@@ -482,7 +446,7 @@ void StartCANSummary(void *argument)
   for(;;)
   {
 	CAN_Send_Cell_Summary(&msg, &modPackInfo);
-    osDelay(300);
+    osDelay(400);
   }
   /* USER CODE END StartCANSummary */
 }
@@ -502,7 +466,7 @@ void StartCANFault(void *argument)
   {
 	CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
 	  					&safetyWarnings, &safetyStates);
-    osDelay(300);
+    osDelay(400);
   }
   /* USER CODE END StartCANFault */
 }

@@ -7,6 +7,6 @@
 ../Core/Src/can.c:134:6:CAN_SettingsInit	16	static
 ../Core/Src/can.c:143:6:Set_CAN_Id	16	static
 ../Core/Src/can.c:147:6:CAN_Send_Voltage	32	static
-../Core/Src/can.c:175:6:CAN_Send_Temperature	24	static
-../Core/Src/can.c:203:6:CAN_Send_Cell_Summary	24	static
-../Core/Src/can.c:220:6:CAN_Send_Safety_Checker	32	static
+../Core/Src/can.c:174:6:CAN_Send_Temperature	24	static
+../Core/Src/can.c:200:6:CAN_Send_Cell_Summary	24	static
+../Core/Src/can.c:215:6:CAN_Send_Safety_Checker	32	static

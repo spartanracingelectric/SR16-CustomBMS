@@ -1,5 +1,5 @@
-../Core/Src/spi.c:31:6:MX_SPI1_Init	2
-../Core/Src/spi.c:63:6:HAL_SPI_MspInit	3
-../Core/Src/spi.c:114:6:HAL_SPI_MspDeInit	2
-../Core/Src/spi.c:141:6:LTC_nCS_High	1
-../Core/Src/spi.c:145:6:LTC_nCS_Low	1
+../Core/Src/spi.c:32:6:MX_SPI1_Init	2
+../Core/Src/spi.c:64:6:HAL_SPI_MspInit	4
+../Core/Src/spi.c:131:6:HAL_SPI_MspDeInit	2
+../Core/Src/spi.c:159:6:LTC_nCS_High	1
+../Core/Src/spi.c:163:6:LTC_nCS_Low	1
