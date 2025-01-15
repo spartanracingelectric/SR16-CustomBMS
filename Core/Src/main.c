@@ -33,7 +33,6 @@
 #include "print.h"
 #include "module.h"
 #include "safety.h"
-//#include "usbd_cdc_if.h"
 #include "balance.h"
 
 /* USER CODE END Includes */
@@ -139,9 +138,9 @@ int main(void)
 	LTC_nCS_High();
 
 	//Sending a fault signal and reseting it
-	HAL_GPIO_WritePin(Fault_GPIO_Port, Fault_Pin, GPIO_PIN_SET);
-	HAL_Delay(500);
-	HAL_GPIO_WritePin(Fault_GPIO_Port, Fault_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_SET);
+	osDelay(500);
+	HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_RESET);
 
 	//initializing variables
 	uint8_t tempindex = 0;
@@ -159,7 +158,7 @@ int main(void)
 	for (uint8_t i = tempindex; i < indexpause; i++) {
 		Wakeup_Idle();
 		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-		HAL_Delay(3);
+		osDelay(3);
 	}
 	Wakeup_Idle();
 	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[0]);
@@ -170,7 +169,7 @@ int main(void)
 	for (uint8_t i = indexpause; i < NUM_THERM_PER_MOD; i++) {
 		Wakeup_Idle();
 		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-		HAL_Delay(3);
+		osDelay(3);
 	}
 	Wakeup_Idle();
 	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[1]);
@@ -197,69 +196,66 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS);
-		if (TimerPacket_FixedPulse(&timerpacket_ltc)) {
-			//calling all CAN realated methods
-			CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
-					&safetyWarnings, &safetyStates);
-			CAN_Send_Cell_Summary(&msg, &modPackInfo);
-			CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
-			CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
-
-			//reading cell voltages
-			Wakeup_Sleep();
-			Read_Volt(modPackInfo.cell_volt);
-			//print(NUM_CELLS, (uint16_t*) modPackInfo.cell_volt);
-
-			//reading cell temperatures
-			Wakeup_Sleep();
-			for (uint8_t i = tempindex; i < indexpause; i++) {
-				Wakeup_Idle();
-				Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-				HAL_Delay(3);
-			}
-			if (indexpause == 8) {
-				Wakeup_Idle();
-				LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[0]);
-				Wakeup_Idle();
-				LTC_STCOMM(2);
-				tempindex = 8;
-				indexpause = NUM_THERM_PER_MOD;
-			} else if (indexpause == NUM_THERM_PER_MOD) {
-				Wakeup_Idle();
-				LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[1]);
-				Wakeup_Idle();
-				LTC_STCOMM(2);
-				indexpause = 8;
-				tempindex = 0;
-			}
-			//print(NUM_THERM_TOTAL, (uint16_t*) modPackInfo.cell_temp);
-
-			//getting the summary of all cells in the pack
-			Cell_Summary(&modPackInfo);
-
-			//checking for faults
-			Fault_Warning_State(&modPackInfo, &safetyFaults,
-					&safetyWarnings, &safetyStates, &low_volt_hysteresis,
-					&high_volt_hysteresis, &cell_imbalance_hysteresis);
-			if (safetyFaults != 0) {
-				HAL_GPIO_WritePin(Fault_GPIO_Port, Fault_Pin, GPIO_PIN_SET);
-			}
-
-			//Passive balancing is called unless a fault has occurred
-			if (safetyFaults == 0 && BALANCE
-					&& ((modPackInfo.cell_volt_highest
-							- modPackInfo.cell_volt_lowest) > 50)) {
-				Start_Balance((uint16_t*) modPackInfo.cell_volt,
-				NUM_DEVICES, modPackInfo.cell_volt_lowest);
-
-			} else if (BALANCE) {
-				End_Balance(&safetyFaults);
-			}
-
-
-		}
-
+//		GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS);
+//		if (TimerPacket_FixedPulse(&timerpacket_ltc)) {
+//			//calling all CAN realated methods
+//			CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
+//					&safetyWarnings, &safetyStates);
+//			CAN_Send_Cell_Summary(&msg, &modPackInfo);
+//			CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
+//			CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
+//
+//			//reading cell voltages
+//			Wakeup_Sleep();
+//			Read_Volt(modPackInfo.cell_volt);
+//			//print(NUM_CELLS, (uint16_t*) modPackInfo.cell_volt);
+//
+//			//reading cell temperatures
+//			Wakeup_Sleep();
+//			for (uint8_t i = tempindex; i < indexpause; i++) {
+//				Wakeup_Idle();
+//				Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+//				HAL_Delay(3);
+//			}
+//			if (indexpause == 8) {
+//				Wakeup_Idle();
+//				LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[0]);
+//				Wakeup_Idle();
+//				LTC_STCOMM(2);
+//				tempindex = 8;
+//				indexpause = NUM_THERM_PER_MOD;
+//			} else if (indexpause == NUM_THERM_PER_MOD) {
+//				Wakeup_Idle();
+//				LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[1]);
+//				Wakeup_Idle();
+//				LTC_STCOMM(2);
+//				indexpause = 8;
+//				tempindex = 0;
+//			}
+//			//print(NUM_THERM_TOTAL, (uint16_t*) modPackInfo.cell_temp);
+//
+//			//getting the summary of all cells in the pack
+//			Cell_Summary(&modPackInfo);
+//
+//			//checking for faults
+//			Fault_Warning_State(&modPackInfo, &safetyFaults,
+//					&safetyWarnings, &safetyStates, &low_volt_hysteresis,
+//					&high_volt_hysteresis, &cell_imbalance_hysteresis);
+//			if (safetyFaults != 0) {
+//				HAL_GPIO_WritePin(Fault_GPIO_Port, Fault_Pin, GPIO_PIN_SET);
+//			}
+//
+//			//Passive balancing is called unless a fault has occurred
+//			if (safetyFaults == 0 && BALANCE
+//					&& ((modPackInfo.cell_volt_highest
+//							- modPackInfo.cell_volt_lowest) > 50)) {
+//				Start_Balance((uint16_t*) modPackInfo.cell_volt,
+//				NUM_DEVICES, modPackInfo.cell_volt_lowest);
+//
+//			} else if (BALANCE) {
+//				End_Balance(&safetyFaults);
+//			}
+//		}
 	}
   /* USER CODE END 3 */
 }
