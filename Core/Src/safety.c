@@ -146,10 +146,7 @@ void Cell_Summary_Temperature(struct batteryModule *batt, uint8_t *fault,
 					*warnings |= 0b00000100;
 				}
 		}
-
-
 	}
-
 }
 
 //This function is combined in the cell summary

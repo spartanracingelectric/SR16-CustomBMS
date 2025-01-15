@@ -37,11 +37,11 @@ void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 9;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_3TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_4TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
   hcan1.Init.AutoWakeUp = DISABLE;
@@ -166,6 +166,7 @@ void CAN_Send_Voltage(struct CANMessage *ptr, uint16_t *read_volt) {
 			CAN_ID = CAN_ID + 0x01;
 			Set_CAN_Id(ptr, CAN_ID);
 		}
+		HAL_Delay(1);
 		CAN_Send(ptr);
 	}
 
@@ -193,8 +194,10 @@ void CAN_Send_Temperature(struct CANMessage *ptr, uint16_t *read_temp) {
 			CAN_ID = CAN_ID + 0x01;
 			Set_CAN_Id(ptr, CAN_ID);
 		}
+		HAL_Delay(1);
 		CAN_Send(ptr);
 	}
+
 }
 
 void CAN_Send_Cell_Summary(struct CANMessage *ptr, struct batteryModule *batt) {
@@ -209,6 +212,8 @@ void CAN_Send_Cell_Summary(struct CANMessage *ptr, struct batteryModule *batt) {
 	ptr->data[5] = (batt->cell_temp_highest) >> 8;
 	ptr->data[6] = batt->cell_temp_lowest;
 	ptr->data[7] = (batt->cell_temp_lowest) >> 8;
+
+	HAL_Delay(1);
 	CAN_Send(ptr);
 }
 
@@ -223,6 +228,7 @@ void CAN_Send_Safety_Checker(struct CANMessage *ptr, struct batteryModule *batt,
 	ptr->data[4] = (batt->pack_voltage) >> 8;
 	ptr->data[5] = (batt->pack_voltage) >> 16;
 	ptr->data[6] = (batt->pack_voltage) >> 24;
+	HAL_Delay(1);
 	CAN_Send(ptr);
 }
 /* USER CODE END 1 */

@@ -32,6 +32,7 @@
 #include "safety.h"
 #include "can.h"
 #include "balance.h"
+#include "stdio.h"
 
 typedef struct {
     uint8_t tempIndex;            // サーミスタインデックス
@@ -103,14 +104,14 @@ osThreadId_t ReadVoltHandle;
 const osThreadAttr_t ReadVolt_attributes = {
   .name = "ReadVolt",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for ReadTemp */
 osThreadId_t ReadTempHandle;
 const osThreadAttr_t ReadTemp_attributes = {
   .name = "ReadTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for CellSummaryVolt */
 osThreadId_t CellSummaryVoltHandle;
@@ -138,14 +139,14 @@ osThreadId_t CANVoltHandle;
 const osThreadAttr_t CANVolt_attributes = {
   .name = "CANVolt",
   .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for CANTemp */
 osThreadId_t CANTempHandle;
 const osThreadAttr_t CANTemp_attributes = {
   .name = "CANTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for CANSummary */
 osThreadId_t CANSummaryHandle;
@@ -159,7 +160,7 @@ osThreadId_t CANFaultHandle;
 const osThreadAttr_t CANFault_attributes = {
   .name = "CANFault",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -191,13 +192,8 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	  MX_GPIO_Init();
-	  MX_ADC1_Init();
-	  MX_ADC2_Init();
-	  MX_TIM7_Init();
 	  MX_SPI1_Init();
 	  MX_CAN1_Init();
-	  MX_USART1_UART_Init();
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -274,6 +270,7 @@ void StartHartBeatLED(void *argument)
   for(;;)
   {
 	  GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS); // Toggle heat beat LED every 1 sec
+	  printf("hello");
 	  osDelay(1000);
 
   }
@@ -316,6 +313,7 @@ void StartReadTemp(void *argument)
 		  Wakeup_Idle();
 		  Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
 	  }
+	  osDelay(2);
 	  if (indexpause == 8) {
 		  Wakeup_Idle();
 		  LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[0]);
@@ -331,7 +329,7 @@ void StartReadTemp(void *argument)
 		  indexpause = 8;
 		  tempindex = 0;
 	  }
-	  osDelay(2);
+
   }
   /* USER CODE END StartReadTemp */
 }
