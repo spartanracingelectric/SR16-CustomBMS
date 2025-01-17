@@ -33,33 +33,6 @@
 #include "can.h"
 #include "balance.h"
 #include "stdio.h"
-
-typedef struct {
-    uint8_t tempIndex;            // サーミスタインデックス
-    uint16_t readTemp[NUM_DEVICES]; // デ�?イス�?��?��?�温度データ
-    uint16_t readAuxReg[NUM_DEVICES * NUM_AUX_GROUP]; // 補助レジスタデータ
-} TempData_t;
-
-
-
-struct batteryModule modPackInfo;
-
-static uint8_t BMS_MUX_PAUSE[2][6] = { { 0x69, 0x28, 0x0F, 0x09, 0x7F, 0xF9 }, {
-		0x69, 0x08, 0x0F, 0x09, 0x7F, 0xF9 } };
-
-struct CANMessage msg;
-uint8_t safetyFaults = 0;
-uint8_t safetyWarnings = 0;
-uint8_t safetyStates = 0;
-
-uint8_t tempindex = 0;
-uint8_t indexpause = 8;
-uint8_t low_volt_hysteresis = 0;
-uint8_t high_volt_hysteresis = 0;
-uint8_t cell_imbalance_hysteresis = 0;
-
-
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,6 +64,29 @@ typedef struct _TimerPacket {
 	uint32_t ts_curr; 	//Current timestamp
 	uint32_t delay;		//Amount to delay
 } TimerPacket;
+
+typedef struct {
+    uint8_t tempIndex;            // サーミスタインデックス
+    uint16_t readTemp[NUM_DEVICES]; // デ�?イス�?��?��?�温度データ
+    uint16_t readAuxReg[NUM_DEVICES * NUM_AUX_GROUP]; // 補助レジスタデータ
+} TempData_t;
+
+struct batteryModule modPackInfo;
+
+static uint8_t BMS_MUX_PAUSE[2][6] = { { 0x69, 0x28, 0x0F, 0x09, 0x7F, 0xF9 }, {
+		0x69, 0x08, 0x0F, 0x09, 0x7F, 0xF9 } };
+
+struct CANMessage msg;
+uint8_t safetyFaults = 0;
+uint8_t safetyWarnings = 0;
+uint8_t safetyStates = 0;
+
+uint8_t tempindex = 0;
+uint8_t indexpause = 8;
+uint8_t low_volt_hysteresis = 0;
+uint8_t high_volt_hysteresis = 0;
+uint8_t cell_imbalance_hysteresis = 0;
+
 /* USER CODE END Variables */
 /* Definitions for HartBeatLED */
 osThreadId_t HartBeatLEDHandle;

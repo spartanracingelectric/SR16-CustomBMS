@@ -1,4 +1,4 @@
-# SR-15 Battery Management System Repository
+# SR-16 Battery Management System Repository
 <br/> A.k.a the AMS<br/>
 
 ## Environment Setup/ Tools Needed
