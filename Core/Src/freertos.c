@@ -27,7 +27,6 @@
 /* USER CODE BEGIN Includes */
 #include "string.h"
 #include "6811.h"
-#include "print.h"
 #include "module.h"
 #include "safety.h"
 #include "can.h"
@@ -60,7 +59,7 @@
 	GpioTimePacket tp_led_heartbeat;
 	TimerPacket timerpacket_ltc;
 
-	struct batteryModule modPackInfo;
+	batteryModule modPackInfo;
 	struct CANMessage msg;
 	uint8_t safetyFaults = 0;
 	uint8_t safetyWarnings = 0;
@@ -86,63 +85,68 @@ osThreadId_t ReadVoltHandle;
 const osThreadAttr_t ReadVolt_attributes = {
   .name = "ReadVolt",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for ReadTemp */
 osThreadId_t ReadTempHandle;
 const osThreadAttr_t ReadTemp_attributes = {
   .name = "ReadTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for CellSummaryVolt */
 osThreadId_t CellSummaryVoltHandle;
 const osThreadAttr_t CellSummaryVolt_attributes = {
   .name = "CellSummaryVolt",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for CellSummaryTemp */
 osThreadId_t CellSummaryTempHandle;
 const osThreadAttr_t CellSummaryTemp_attributes = {
   .name = "CellSummaryTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for StartBalance */
 osThreadId_t StartBalanceHandle;
 const osThreadAttr_t StartBalance_attributes = {
   .name = "StartBalance",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for CANVolt */
 osThreadId_t CANVoltHandle;
 const osThreadAttr_t CANVolt_attributes = {
   .name = "CANVolt",
   .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for CANTemp */
 osThreadId_t CANTempHandle;
 const osThreadAttr_t CANTemp_attributes = {
   .name = "CANTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for CANSummary */
 osThreadId_t CANSummaryHandle;
 const osThreadAttr_t CANSummary_attributes = {
   .name = "CANSummary",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for CANFault */
 osThreadId_t CANFaultHandle;
 const osThreadAttr_t CANFault_attributes = {
   .name = "CANFault",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+/* Definitions for batteryModule */
+osMessageQueueId_t batteryModuleHandle;
+const osMessageQueueAttr_t batteryModule_attributes = {
+  .name = "batteryModule"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -206,7 +210,7 @@ void MX_FREERTOS_Init(void) {
 	  	for (uint8_t i = tempindex; i < indexpause; i++) {
 	  		Wakeup_Idle();
 	  		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-	  		osDelay(3);
+	  		osDelay(2);
 	  	}
 	  	Wakeup_Idle();
 	  	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[0]);
@@ -217,7 +221,7 @@ void MX_FREERTOS_Init(void) {
 	  	for (uint8_t i = indexpause; i < NUM_THERM_PER_MOD; i++) {
 	  		Wakeup_Idle();
 	  		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-	  		osDelay(3);
+	  		osDelay(2);
 	  	}
 	  	Wakeup_Idle();
 	  	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[1]);
@@ -238,6 +242,10 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of batteryModule */
+  batteryModuleHandle = osMessageQueueNew (1, sizeof(batteryModule), &batteryModule_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -322,6 +330,10 @@ void StartReadVolt(void *argument)
   {
 	  Wakeup_Sleep();
 	  Read_Volt(modPackInfo.cell_volt);
+	  if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+	          printf("キューへの送信に失敗しました。\n");
+	      }
+
 	  osDelay(205);
   }
   /* USER CODE END StartReadVolt */

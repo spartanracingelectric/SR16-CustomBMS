@@ -1,20 +1,19 @@
 # SR-16 Battery Management System Repository
-<br/> A.k.a the AMS<br/>
 
 ## Environment Setup/ Tools Needed
 - Install STM32CubeIDE
 - Install STM32CubeProgrammer
 - Install STM32CubeMX
-- ST-LINK/V3
+- ST-LINK V3 MOD
 
 ## Project Overview
 Note: Lots of the code is prewritten after setting up the project
 1. main.c and main.h
-2. 6811.c and 6811.h: contains the methods mostly written by analog devices
-3. balance.c and balance.h: conatins the cell balancing code
-4. can.c and can.h: contains the code to send CAN bus messages
-5. module.c and module.h: conatins the code to read voltages (Volt) and to read temperatures (Celsius)
-6. print.c and print.h: contains the methods for printing over serial
+2. freertos.c and freertos.h: contains all tasks and initialization, variables like main.c 
+3. 6811.c and 6811.h: contains the methods mostly written by analog devices
+4. balance.c and balance.h: conatins the cell balancing code
+5. can.c and can.h: contains the code to send CAN bus messages
+6. module.c and module.h: conatins the code to read voltages (Volt) and to read temperatures (Celsius)
 7. safety.c and safety.h: conatins the code for cell summary, faults, warnings, and state
 
 The #defines are in the files listed below, and the picture show what can be modified

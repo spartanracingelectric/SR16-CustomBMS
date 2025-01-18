@@ -1,6 +1,5 @@
 #include "module.h"
 #include <math.h>
-#include "print.h"
 #include "6811.h"
 
 #define ntcNominal 10000.0f
@@ -22,7 +21,7 @@ static uint8_t BMS_THERM[][6] = {{ 0x69, 0x28, 0x0F, 0xF9, 0x7F, 0xF9 }, { 0x69,
 
 void Get_Actual_Temps(uint8_t dev_idx, uint8_t tempindex, uint16_t *actual_temp, uint16_t data) {
     if (data == 0) {
-        actual_temp[dev_idx * NUM_THERM_PER_MOD + tempindex] = -99.0f; // error value
+        actual_temp[dev_idx * NUM_THERM_PER_MOD + tempindex] = 999.0f; // error value
         return;
     }
 
