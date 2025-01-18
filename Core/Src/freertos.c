@@ -308,7 +308,7 @@ void StartHartBeatLED(void *argument)
   for(;;)
   {
 	  GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS); // Toggle heat beat LED every 1 sec
-	  printf("hello");
+//	  printf("hello");
 	  osDelay(1000);
 
   }
@@ -331,7 +331,7 @@ void StartReadVolt(void *argument)
 	  Wakeup_Sleep();
 	  Read_Volt(modPackInfo.cell_volt);
 	  if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
-	          printf("キューへの送信に失敗しました。\n");
+//	          printf("キューへの送信に失敗しました。\n");
 	      }
 
 	  osDelay(205);
@@ -357,6 +357,9 @@ void StartReadTemp(void *argument)
 	  for (uint8_t i = tempindex; i < indexpause; i++) {
 		  Wakeup_Idle();
 		  Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+		  if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+		  //	          printf("キューへの送信に失敗しました。\n");
+		  	      }
 	  }
 	  osDelay(2);
 	  if (indexpause == 8) {
@@ -395,6 +398,9 @@ void StartCellSummaryVoltage(void *argument)
 	Cell_Summary_Voltage(&modPackInfo, &safetyFaults,
 	  					&safetyWarnings, &safetyStates, &low_volt_hysteresis,
 	  					&high_volt_hysteresis, &cell_imbalance_hysteresis);
+	if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+	//	          printf("キューへの送信に失敗しました。\n");
+		      }
     osDelay(300);
   }
   /* USER CODE END StartCellSummaryVoltage */
@@ -414,6 +420,9 @@ void StartCellSummaryTemperature(void *argument)
   for(;;)
   {
 	Cell_Summary_Temperature(&modPackInfo, &safetyFaults,&safetyWarnings);
+	if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+	//	          printf("キューへの送信に失敗しました。\n");
+		      }
     osDelay(300);
   }
   /* USER CODE END StartCellSummaryTemperature */
