@@ -27,12 +27,12 @@
 /* USER CODE BEGIN Includes */
 #include "string.h"
 #include "6811.h"
-#include "print.h"
 #include "module.h"
 #include "safety.h"
 #include "can.h"
 #include "balance.h"
 #include "stdio.h"
+<<<<<<< HEAD
 #include "usart.h"
 
 typedef struct {
@@ -61,6 +61,13 @@ uint8_t cell_imbalance_hysteresis = 0;
 
 
 
+=======
+#include "adc.h"
+#include "spi.h"
+#include "tim.h"
+#include "usart.h"
+#include "gpio.h"
+>>>>>>> becb8e322ea1d2d4012bc22389c91709f6c9fccb
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,18 +87,22 @@ uint8_t cell_imbalance_hysteresis = 0;
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-typedef struct _GpioTimePacket {
-	GPIO_TypeDef *gpio_port; //Port
-	uint16_t gpio_pin;	//Pin number
-	uint32_t ts_prev;	//Previous timestamp
-	uint32_t ts_curr; 	//Current timestamp
-} GpioTimePacket;
+	GpioTimePacket tp_led_heartbeat;
+	TimerPacket timerpacket_ltc;
 
-typedef struct _TimerPacket {
-	uint32_t ts_prev;	//Previous timestamp
-	uint32_t ts_curr; 	//Current timestamp
-	uint32_t delay;		//Amount to delay
-} TimerPacket;
+	batteryModule modPackInfo;
+	struct CANMessage msg;
+	uint8_t safetyFaults = 0;
+	uint8_t safetyWarnings = 0;
+	uint8_t safetyStates = 0;
+	uint8_t tempindex = 0;
+	uint8_t indexpause = 8;
+	uint8_t low_volt_hysteresis = 0;
+	uint8_t high_volt_hysteresis = 0;
+	uint8_t cell_imbalance_hysteresis = 0;
+
+	static uint8_t BMS_MUX_PAUSE[2][6] = { { 0x69, 0x28, 0x0F, 0x09, 0x7F, 0xF9 }, {
+			0x69, 0x08, 0x0F, 0x09, 0x7F, 0xF9 } };
 /* USER CODE END Variables */
 /* Definitions for HartBeatLED */
 osThreadId_t HartBeatLEDHandle;
@@ -105,68 +116,72 @@ osThreadId_t ReadVoltHandle;
 const osThreadAttr_t ReadVolt_attributes = {
   .name = "ReadVolt",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for ReadTemp */
 osThreadId_t ReadTempHandle;
 const osThreadAttr_t ReadTemp_attributes = {
   .name = "ReadTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityRealtime,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for CellSummaryVolt */
 osThreadId_t CellSummaryVoltHandle;
 const osThreadAttr_t CellSummaryVolt_attributes = {
   .name = "CellSummaryVolt",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for CellSummaryTemp */
 osThreadId_t CellSummaryTempHandle;
 const osThreadAttr_t CellSummaryTemp_attributes = {
   .name = "CellSummaryTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for StartBalance */
 osThreadId_t StartBalanceHandle;
 const osThreadAttr_t StartBalance_attributes = {
   .name = "StartBalance",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for CANVolt */
 osThreadId_t CANVoltHandle;
 const osThreadAttr_t CANVolt_attributes = {
   .name = "CANVolt",
   .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for CANTemp */
 osThreadId_t CANTempHandle;
 const osThreadAttr_t CANTemp_attributes = {
   .name = "CANTemp",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for CANSummary */
 osThreadId_t CANSummaryHandle;
 const osThreadAttr_t CANSummary_attributes = {
   .name = "CANSummary",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+  .priority = (osPriority_t) osPriorityBelowNormal,
 };
 /* Definitions for CANFault */
 osThreadId_t CANFaultHandle;
 const osThreadAttr_t CANFault_attributes = {
   .name = "CANFault",
   .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityHigh,
+  .priority = (osPriority_t) osPriorityBelowNormal,
+};
+/* Definitions for batteryModule */
+osMessageQueueId_t batteryModuleHandle;
+const osMessageQueueAttr_t batteryModule_attributes = {
+  .name = "batteryModule"
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-void SystemClock_Config(void);
 void GpioTimePacket_Init(GpioTimePacket *gtp, GPIO_TypeDef *port, uint16_t pin);
 void TimerPacket_Init(TimerPacket *tp, uint32_t delay);
 void GpioFixedToggle(GpioTimePacket *gtp, uint16_t update_ms);
@@ -193,8 +208,58 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	  MX_GPIO_Init();
+	  MX_ADC1_Init();
+	  MX_ADC2_Init();
+	  MX_TIM7_Init();
 	  MX_SPI1_Init();
 	  MX_CAN1_Init();
+	  MX_USART1_UART_Init();
+
+	  CAN_SettingsInit(&msg); // Start CAN at 0x00
+	  	//Start timer
+	  	GpioTimePacket_Init(&tp_led_heartbeat, MCU_HEARTBEAT_LED_GPIO_Port,
+	  	MCU_HEARTBEAT_LED_Pin);
+	  	TimerPacket_Init(&timerpacket_ltc, LTC_DELAY);
+	  	//Pull SPI1 nCS HIGH (deselect)
+	  	LTC_nCS_High();
+
+	  	//Sending a fault signal and reseting it
+	  	HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_SET);
+	  	osDelay(500);
+	  	HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_RESET);
+
+	  	//initializing variables
+
+
+	  	//reading cell voltages
+	  	Wakeup_Sleep();
+	  	Read_Volt(modPackInfo.cell_volt);
+
+	  	//reading cell temperatures
+	  	Wakeup_Sleep();
+	  	for (uint8_t i = tempindex; i < indexpause; i++) {
+	  		Wakeup_Idle();
+	  		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+	  		osDelay(2);
+	  	}
+	  	Wakeup_Idle();
+	  	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[0]);
+	  	Wakeup_Idle();
+	  	LTC_STCOMM(2);
+
+	  	Wakeup_Sleep();
+	  	for (uint8_t i = indexpause; i < NUM_THERM_PER_MOD; i++) {
+	  		Wakeup_Idle();
+	  		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+	  		osDelay(2);
+	  	}
+	  	Wakeup_Idle();
+	  	LTC_WRCOMM(NUM_DEVICES, BMS_MUX_PAUSE[1]);
+	  	Wakeup_Idle();
+	  	LTC_STCOMM(2);
+
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -208,6 +273,10 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of batteryModule */
+  batteryModuleHandle = osMessageQueueNew (1, sizeof(batteryModule), &batteryModule_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -255,8 +324,7 @@ void MX_FREERTOS_Init(void) {
 }
 
 /* USER CODE BEGIN Header_StartHartBeatLED */
-GpioTimePacket tp_led_heartbeat;
-TimerPacket timerpacket_ltc;
+
 /**
   * @brief  Function implementing the HartBeatLED thread.
   * @param  argument: Not used
@@ -271,8 +339,13 @@ void StartHartBeatLED(void *argument)
   for(;;)
   {
 	  GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS); // Toggle heat beat LED every 1 sec
+<<<<<<< HEAD
 	  printf("hello");
 //	  osDelay(1000);
+=======
+//	  printf("hello");
+	  osDelay(1000);
+>>>>>>> becb8e322ea1d2d4012bc22389c91709f6c9fccb
 
   }
   /* USER CODE END StartHartBeatLED */
@@ -291,8 +364,13 @@ void StartReadVolt(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  	Read_Volt(modPackInfo.cell_volt);
-	  	osDelay(205);
+	  Wakeup_Sleep();
+	  Read_Volt(modPackInfo.cell_volt);
+	  if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+//	          printf("キューへの送信に失敗しました。\n");
+	      }
+
+	  osDelay(205);
   }
   /* USER CODE END StartReadVolt */
 }
@@ -310,9 +388,14 @@ void StartReadTemp(void *argument)
   /* Infinite loop */
   for(;;)
   {
+	  Wakeup_Sleep();
+
 	  for (uint8_t i = tempindex; i < indexpause; i++) {
 		  Wakeup_Idle();
 		  Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+		  if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+		  //	          printf("キューへの送信に失敗しました。\n");
+		  	      }
 	  }
 	  osDelay(2);
 	  if (indexpause == 8) {
@@ -351,6 +434,9 @@ void StartCellSummaryVoltage(void *argument)
 	Cell_Summary_Voltage(&modPackInfo, &safetyFaults,
 	  					&safetyWarnings, &safetyStates, &low_volt_hysteresis,
 	  					&high_volt_hysteresis, &cell_imbalance_hysteresis);
+	if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+	//	          printf("キューへの送信に失敗しました。\n");
+		      }
     osDelay(300);
   }
   /* USER CODE END StartCellSummaryVoltage */
@@ -370,6 +456,9 @@ void StartCellSummaryTemperature(void *argument)
   for(;;)
   {
 	Cell_Summary_Temperature(&modPackInfo, &safetyFaults,&safetyWarnings);
+	if (osMessageQueuePut(batteryModuleHandle, &modPackInfo, 0, osWaitForever) != osOK) {
+	//	          printf("キューへの送信に失敗しました。\n");
+		      }
     osDelay(300);
   }
   /* USER CODE END StartCellSummaryTemperature */
@@ -472,6 +561,38 @@ void StartCANFault(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-
+//Initialize struct values
+//Will initialize GPIO to LOW!
+void GpioTimePacket_Init(GpioTimePacket *gtp, GPIO_TypeDef *port, uint16_t pin) {
+	HAL_GPIO_WritePin(port, pin, GPIO_PIN_RESET); //Set GPIO LOW
+	gtp->gpio_port = port;
+	gtp->gpio_pin = pin;
+	gtp->ts_prev = 0; //Init to 0
+	gtp->ts_curr = 0; //Init to 0
+}
+//update_ms = update after X ms
+void GpioFixedToggle(GpioTimePacket *gtp, uint16_t update_ms) {
+	gtp->ts_curr = HAL_GetTick(); //Record current timestamp
+	if (gtp->ts_curr - gtp->ts_prev > update_ms) {
+		HAL_GPIO_TogglePin(gtp->gpio_port, gtp->gpio_pin); // Toggle GPIO
+		gtp->ts_prev = gtp->ts_curr;
+	}
+}
+//Initialize struct values
+//Will initialize GPIO to LOW!
+void TimerPacket_Init(TimerPacket *tp, uint32_t delay) {
+	tp->ts_prev = 0;		//Init to 0
+	tp->ts_curr = 0; 		//Init to 0
+	tp->delay = delay;	//Init to user value
+}
+//update_ms = update after X ms
+uint8_t TimerPacket_FixedPulse(TimerPacket *tp) {
+	tp->ts_curr = HAL_GetTick(); //Record current timestamp
+	if (tp->ts_curr - tp->ts_prev > tp->delay) {
+		tp->ts_prev = tp->ts_curr; //Update prev timestamp to current
+		return 1; //Enact event (time interval is a go)
+	}
+	return 0; //Do not enact event
+}
 /* USER CODE END Application */
 

@@ -50,7 +50,7 @@ extern "C" {
 #define BALANCE 				0 //FALSE
 /* USER CODE END Private defines */
 
-struct batteryModule {
+typedef struct batteryModule {
 	uint16_t cell_volt[NUM_CELLS];
 	uint16_t cell_temp[NUM_THERM_TOTAL];
 	uint16_t module_averages[NUM_DEVICES];
@@ -60,14 +60,25 @@ struct batteryModule {
 	uint16_t cell_temp_highest;
 	uint32_t pack_voltage;
 	uint16_t read_auxreg[NUM_AUXES];
-
-};
+}batteryModule;
 
 struct CANMessage {
 	CAN_TxHeaderTypeDef TxHeader;
 	uint32_t TxMailbox;
 	uint8_t data[8];
 };
+
+typedef struct _GpioTimePacket {
+	GPIO_TypeDef *gpio_port; //Port
+	uint16_t gpio_pin;	//Pin number
+	uint32_t ts_prev;	//Previous timestamp
+	uint32_t ts_curr; 	//Current timestamp
+} GpioTimePacket;
+typedef struct _TimerPacket {
+	uint32_t ts_prev;	//Previous timestamp
+	uint32_t ts_curr; 	//Current timestamp
+	uint32_t delay;		//Amount to delay
+} TimerPacket;
 
 /* USER CODE END ET */
 
