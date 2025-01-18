@@ -33,6 +33,7 @@
 #include "can.h"
 #include "balance.h"
 #include "stdio.h"
+#include "usart.h"
 
 typedef struct {
     uint8_t tempIndex;            // サーミスタインデックス
@@ -271,7 +272,7 @@ void StartHartBeatLED(void *argument)
   {
 	  GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS); // Toggle heat beat LED every 1 sec
 	  printf("hello");
-	  osDelay(1000);
+//	  osDelay(1000);
 
   }
   /* USER CODE END StartHartBeatLED */
