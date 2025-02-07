@@ -47,7 +47,7 @@ void Read_Volt(uint16_t *read_volt) {
 //	printf("volt end\n");
 }
 
-void Read_Temp(uint8_t tempindex, uint16_t *read_temp, uint16_t *read_auxreg) {
+void Read_Temp_And_Sensor(uint8_t tempindex, uint16_t *read_temp, uint16_t *read_auxreg) {
 //	printf("Temperature read start\n");
 	LTC_WRCOMM(NUM_DEVICES, BMS_THERM[tempindex]);
 	LTC_STCOMM(2);
