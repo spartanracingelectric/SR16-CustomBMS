@@ -1,6 +1,7 @@
 #include "balance.h"
 #include "6811.h"
 #include "can.h"
+#include <stdio.h>
 
 //DEFAULT VALUES THAT ARE SET IN CONFIG REGISTERS
 //static int GPIO[5] = { 1, 1, 1, 1, 1 };

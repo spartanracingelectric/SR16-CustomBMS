@@ -57,7 +57,7 @@ void LTC_WRCOMM(uint8_t total_ic, //The number of ICs being written to
 
 void LTC_STCOMM(uint8_t len);
 
-LTC_SPI_StatusTypeDef Read_Cell_Temps(uint16_t *read_auxiliary);
+LTC_SPI_StatusTypeDef Read_GPIO(uint16_t *read_auxiliary);
 
 void LTC_ADCV(uint8_t MD, //ADC Mode
 		uint8_t DCP, //Discharge Permit

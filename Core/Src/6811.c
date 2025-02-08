@@ -239,7 +239,7 @@ void LTC_STCOMM(uint8_t len) {
 	LTC_nCS_High();
 }
 
-LTC_SPI_StatusTypeDef Read_Cell_Temps(uint16_t *read_auxiliary) {
+LTC_SPI_StatusTypeDef Read_GPIO(uint16_t *read_auxiliary) {
 	LTC_SPI_StatusTypeDef ret = LTC_SPI_OK;
 	LTC_SPI_StatusTypeDef hal_ret;
 	const uint8_t ARR_SIZE_REG = NUM_DEVICES * REG_LEN;
