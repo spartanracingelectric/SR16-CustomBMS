@@ -167,7 +167,7 @@ int main(void)
 //	LTC_STCOMM(2);
 
 	for (uint8_t i = tempindex; i < indexpause; i++) {
-		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+		Read_Thermistor(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
 //				printf(" Cell: %d, Temp: %d\n", i, modPackInfo.cell_temp[i]);
 	}
 	if (indexpause == 8) {
@@ -209,7 +209,7 @@ int main(void)
 
 			//reading cell temperatures
 			for (uint8_t i = tempindex; i < indexpause; i++) {
-				Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+				Read_Thermistor(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
 //				printf(" Cell: %d, Temp: %d\n", i, modPackInfo.cell_temp[i]);
 			}
 			if (indexpause == 8) {
@@ -226,6 +226,7 @@ int main(void)
 				tempindex = 0;
 //				HAL_Delay(1); //this delay is for stablize mux
 			}
+			Read_Pressure(modPackInfo.pressure, modPackInfo.read_auxreg);
 //			HAL_Delay(1);
 //			for(int i = 0; i < NUM_THERM_TOTAL; i++){
 //				printf("Temp[%d]: %d\n",i, modPackInfo.cell_temp[i]);
