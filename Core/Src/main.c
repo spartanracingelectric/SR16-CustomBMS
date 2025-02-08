@@ -195,6 +195,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    	//ここからメインループだよ
 		GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS);
 		printf("hello\n");
 			//reading cell voltages
@@ -241,15 +242,15 @@ int main(void)
 								&cell_imbalance_hysteresis);
 			Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings, &high_temp_hysteresis);
 //			Passive balancing is called unless a fault has occurred
-			if (safetyFaults == 0 && balance
-					&& ((modPackInfo.cell_volt_highest
-							- modPackInfo.cell_volt_lowest) > 50)) {
-				Start_Balance((uint16_t*) modPackInfo.cell_volt,
-				NUM_DEVICES, modPackInfo.cell_volt_lowest);
-
-			} else if (balance) {
-				End_Balance(&safetyFaults);
-			}
+//			if (safetyFaults == 0 && balance
+//					&& ((modPackInfo.cell_volt_highest
+//							- modPackInfo.cell_volt_lowest) > 50)) {
+//				Start_Balance((uint16_t*) modPackInfo.cell_volt,
+//				NUM_DEVICES, modPackInfo.cell_volt_lowest);
+//
+//			} else if (balance) {
+//				End_Balance(&safetyFaults);
+//			}
 
 			if (TimerPacket_FixedPulse(&timerpacket_ltc)) {
 			//calling all CAN realated methods
