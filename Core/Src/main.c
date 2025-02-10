@@ -20,6 +20,7 @@
 #include "main.h"
 #include "adc.h"
 #include "can.h"
+#include "dma.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -126,6 +127,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
   MX_TIM7_Init();
