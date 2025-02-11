@@ -1,6 +1,6 @@
 #include "error.h"
 
-#include "cmsis_gcc.h"
+#include "stm32f1xx_hal_conf.h"
 
 /**
  * @brief  This function is executed in case of error occurrence.

@@ -22,7 +22,7 @@
 #include "gpio.h"
 
 #include "spi.h"
-#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_conf.h"
 
 /* USER CODE BEGIN 0 */
 

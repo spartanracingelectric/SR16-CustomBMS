@@ -21,8 +21,9 @@
 #include "spi.h"
 
 #include "error.h"
+#include "gpio.h"
 #include "stm32f105xc.h"
-#include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_conf.h"
 
 /* USER CODE BEGIN 0 */
 
