@@ -4,7 +4,7 @@
 
 #include "accumulator.h"
 #include "gpio.h"
-#include "main.h"
+#include "stm32f1xx_hal.h"
 
 void Safety_checkVoltageFaults(Accumulator *batt, uint8_t *fault,
                                uint8_t *warnings, uint8_t *states,

@@ -20,8 +20,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "spi.h"
 
+#include "error.h"
 #include "gpio.h"
-#include "main.h"
+#include "stm32f1xx_hal.h"
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */

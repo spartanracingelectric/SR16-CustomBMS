@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "accumulator.h"
-#include "main.h"
 #include "spi.h"
+#include "stm32f1xx_hal.h"
 
 #ifndef INC_6811_H_
 #define INC_6811_H_
