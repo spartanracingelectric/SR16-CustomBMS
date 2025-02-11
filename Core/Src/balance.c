@@ -2,6 +2,10 @@
 
 #include "6811.h"
 
+void Balance_performDischarge(uint16_t *read_volt, uint8_t total_ic,
+                              uint16_t lowest);
+void Balance_setConfigRegisters(uint8_t dev_idx, uint8_t *DCC);
+
 // DEFAULT VALUES THAT ARE SET IN CONFIG REGISTERS
 // static int GPIO[5] = { 1, 1, 1, 1, 1 };
 // static int REFON = 0;
@@ -46,13 +50,13 @@ static uint8_t defaultConfig[8][6] = {
 //     }
 // }
 
-void Start_Balance(uint16_t *read_volt, uint8_t length, uint16_t lowest) {
-    Discharge_Algo(read_volt, NUM_DEVICES, lowest);
+void Balance_start(uint16_t *read_volt, uint8_t length, uint16_t lowest) {
+    Balance_performDischarge(read_volt, NUM_DEVICES, lowest);
     Wakeup_Sleep();
     LTC6811_WRCFG(NUM_DEVICES, config);
 }
 
-void End_Balance(uint8_t *faults) {
+void Balance_end(uint8_t *faults) {
     Wakeup_Sleep();
     LTC6811_WRCFG(NUM_DEVICES, defaultConfig);
     *faults |= 0b00000010;
@@ -65,7 +69,8 @@ void End_Balance(uint8_t *faults) {
  * @param length count of readings.
  * @param lowest read_volt's lowest cell reading
  */
-void Discharge_Algo(uint16_t *read_volt, uint8_t total_ic, uint16_t lowest) {
+void Balance_performDischarge(uint16_t *read_volt, uint8_t total_ic,
+                              uint16_t lowest) {
     for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
         // check if each cell is close within 0.005V of the lowest cell.
         uint8_t DCC[12];
@@ -78,7 +83,7 @@ void Discharge_Algo(uint16_t *read_volt, uint8_t total_ic, uint16_t lowest) {
                 DCC[cell_idx] = 0;
             }
         }
-        Set_Cfg(dev_idx, (uint8_t *)DCC);
+        Balance_setConfigRegisters(dev_idx, (uint8_t *)DCC);
     }
 }
 
@@ -88,7 +93,7 @@ void Discharge_Algo(uint16_t *read_volt, uint8_t total_ic, uint16_t lowest) {
  * @param device index
  * @param array of DCC bits
  */
-void Set_Cfg(uint8_t dev_idx, uint8_t *DCC) {
+void Balance_setConfigRegisters(uint8_t dev_idx, uint8_t *DCC) {
     for (uint8_t cell_idx = 0; cell_idx < NUM_CELL_SERIES_GROUP; cell_idx++) {
         if (DCC[cell_idx]) {
             if (cell_idx < 8) {
