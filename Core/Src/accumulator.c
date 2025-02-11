@@ -34,7 +34,7 @@ void Accumulator_readVoltages(uint16_t *dest) {
     Read_Cell_Volt((uint16_t *)dest);
 }
 
-void Accumulator_readTempuratures(uint8_t tempindex, uint16_t *read_temp,
+void Accumulator_readTemperatures(uint8_t tempindex, uint16_t *read_temp,
                                   uint16_t *read_auxreg) {
     LTC_WRCOMM(NUM_DEVICES, BMS_THERM[tempindex]);
     LTC_STCOMM(2);

@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_it.h"
 
+#include "main.h"
 #include "stm32f1xx_hal_conf.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

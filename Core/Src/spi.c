@@ -21,7 +21,7 @@
 #include "spi.h"
 
 #include "gpio.h"
-
+#include "main.h"
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */

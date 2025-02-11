@@ -35,7 +35,6 @@
 #include "6811.h"
 #include "accumulator.h"
 #include "balance.h"
-#include "error.h"
 #include "hv.h"
 #include "safety.h"
 #include "string.h"
@@ -371,6 +370,19 @@ uint8_t TimerPacket_FixedPulse(TimerPacket *tp) {
 }
 
 /* USER CODE END 4 */
+/**
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
+void Error_Handler(void) {
+    /* USER CODE BEGIN Error_Handler_Debug */
+    /* User can add his own implementation to report the HAL error return state
+     */
+    __disable_irq();
+    while (1) {
+    }
+    /* USER CODE END Error_Handler_Debug */
+}
 
 #ifdef USE_FULL_ASSERT
 /**

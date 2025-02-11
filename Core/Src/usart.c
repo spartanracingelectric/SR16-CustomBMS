@@ -21,6 +21,7 @@
 #include <string.h>
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
