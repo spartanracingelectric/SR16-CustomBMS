@@ -26,8 +26,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
-
+#include "stm32f1xx_hal.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -53,4 +52,3 @@ void LTC_nCS_Low(void);
 #endif
 
 #endif /* __SPI_H__ */
-
