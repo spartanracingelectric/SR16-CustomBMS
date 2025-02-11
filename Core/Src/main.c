@@ -38,7 +38,6 @@
 #include "error.h"
 #include "hv.h"
 #include "safety.h"
-#include "stm32f1xx_hal_conf.h"
 #include "string.h"
 
 /* USER CODE END Includes */

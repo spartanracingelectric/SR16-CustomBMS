@@ -21,8 +21,6 @@
 #include <string.h>
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "error.h"
-#include "stm32f105xc.h"
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */

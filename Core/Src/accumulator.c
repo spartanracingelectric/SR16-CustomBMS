@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "6811.h"
-#include "stm32f1xx_hal.h"
 
 #define ntcNominal 10000.0f
 #define ntcSeriesResistance 10000.0f

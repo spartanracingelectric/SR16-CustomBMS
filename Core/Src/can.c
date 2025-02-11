@@ -21,9 +21,7 @@
 #include "can.h"
 
 #include "accumulator.h"
-#include "error.h"
-#include "stm32f105xc.h"
-#include "stm32f1xx_hal_conf.h"
+#include "main.h"
 
 /* USER CODE BEGIN 0 */
 /* USER CODE END 0 */

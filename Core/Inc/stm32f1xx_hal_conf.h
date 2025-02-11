@@ -56,7 +56,7 @@ extern "C" {
 /*#define HAL_PCD_MODULE_ENABLED   */
 /*#define HAL_HCD_MODULE_ENABLED   */
 /*#define HAL_PWR_MODULE_ENABLED   */
-#define HAL_RCC_MODULE_ENABLED
+/*#define HAL_RCC_MODULE_ENABLED   */
 /*#define HAL_RTC_MODULE_ENABLED   */
 /*#define HAL_SD_MODULE_ENABLED   */
 /*#define HAL_MMC_MODULE_ENABLED   */
@@ -259,8 +259,10 @@ extern "C" {
 #define PHY_SR \
     ((uint16_t)0x10U) /*!< PHY status register Offset                      */
 
-#define PHY_SPEED_STATUS ((uint16_t)0x0002U)  /*!< PHY Speed mask */
-#define PHY_DUPLEX_STATUS ((uint16_t)0x0004U) /*!< PHY Duplex mask */
+#define PHY_SPEED_STATUS \
+    ((uint16_t)0x0002U) /*!< PHY Speed mask */
+#define PHY_DUPLEX_STATUS \
+    ((uint16_t)0x0004U) /*!< PHY Duplex mask */
 
 /* ################## SPI peripheral configuration ########################## */
 

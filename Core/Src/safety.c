@@ -4,9 +4,9 @@
 
 #include "accumulator.h"
 #include "gpio.h"
-#include "stm32f105xc.h"
+#include "main.h"
 
-void Safety_checkVoltageFaults(struct Accumulator *batt, uint8_t *fault,
+void Safety_checkVoltageFaults(Accumulator *batt, uint8_t *fault,
                                uint8_t *warnings, uint8_t *states,
                                uint8_t *high_volt_fault_lock,
                                uint8_t *low_volt_hysteresis,
@@ -118,7 +118,7 @@ void Safety_checkVoltageFaults(struct Accumulator *batt, uint8_t *fault,
     }
 }
 
-void Safety_checkTempFaults(struct Accumulator *batt, uint8_t *fault,
+void Safety_checkTempFaults(Accumulator *batt, uint8_t *fault,
                             uint8_t *warnings, uint8_t *high_temp_hysteresis) {
     batt->cell_temp_highest = batt->cell_temp[0];
     batt->cell_temp_lowest = batt->cell_temp[0];
@@ -158,7 +158,7 @@ void Safety_checkTempFaults(struct Accumulator *batt, uint8_t *fault,
     }
 }
 
-// void High_Voltage_Fault(struct Accumulator *batt, uint8_t *fault, uint8_t
+// void High_Voltage_Fault(Accumulator *batt, uint8_t *fault, uint8_t
 // *warnings){ 	uint32_t sum_voltage = 0;
 //
 //	for (int i = 0; i < NUM_CELLS; i++) {
@@ -191,7 +191,7 @@ void Safety_checkTempFaults(struct Accumulator *batt, uint8_t *fault,
 //	}
 // }
 
-// void Module_Voltage_Averages(struct Accumulator *batt) {
+// void Module_Voltage_Averages(Accumulator *batt) {
 //     for (int i = 0; i < NUM_CELLS; i += NUM_CELL_SERIES_GROUP) {
 //         uint16_t volt_sum = 0;
 //
@@ -207,7 +207,7 @@ void Safety_checkTempFaults(struct Accumulator *batt, uint8_t *fault,
 // }
 //
 //
-// void Module_Temperature_Averages(struct Accumulator *batt) {
+// void Module_Temperature_Averages(Accumulator *batt) {
 //     for (int i = 0; i < NUM_THERM_TOTAL; i += NUM_THERM_PER_MOD) {
 //         uint16_t temp_sum = 0;
 //

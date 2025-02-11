@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "stm32f1xx_hal.h"
-
 void Start_Balance(uint16_t *read_volt, uint8_t length, uint16_t lowest);
 void End_Balance(uint8_t *faults);
 void Discharge_Algo(uint16_t *read_volt, uint8_t total_ic, uint16_t lowest);

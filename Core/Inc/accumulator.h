@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#include "stm32f1xx_hal.h"
-
 #define MD_FAST 1      // 27kHz
 #define MD_NORMAL 2    // 7kHz
 #define MD_FILTERED 3  // 26Hz

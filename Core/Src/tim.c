@@ -20,9 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "tim.h"
 
-#include "error.h"
-#include "stm32f105xc.h"
-
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */

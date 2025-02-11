@@ -1,10 +1,10 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "accumulator.h"
+#include "main.h"
 #include "spi.h"
-#include "stm32f1xx_hal.h"
-#include "string.h"
 
 #ifndef INC_6811_H_
 #define INC_6811_H_

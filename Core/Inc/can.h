@@ -29,7 +29,7 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 #include "accumulator.h"
-#include "stm32f1xx_hal_conf.h"
+#include "main.h"
 
 /* USER CODE END Includes */
 

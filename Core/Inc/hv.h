@@ -2,7 +2,6 @@
 #define INC_HV_H_
 
 #include "accumulator.h"
-#include "stm32f1xx_hal.h"
 
 #define ADC_RESOLUTION 4096.0f  // 12-bit ADC
 #define V_REF 3.3f              // Reference voltage (V)

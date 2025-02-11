@@ -1,3 +1,4 @@
+#include "stm32f1xx_it.h"
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
@@ -19,7 +20,7 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f1xx_hal_conf.h"
+#include "main.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
