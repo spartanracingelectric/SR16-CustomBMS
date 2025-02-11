@@ -136,7 +136,7 @@ int main(void) {
     MX_CAN1_Init();
     MX_USART1_UART_Init();
     /* USER CODE BEGIN 2 */
-    CAN_SettingsInit(&msg);  // Start CAN at 0x00
+    CAN_initSettings(&msg);  // Start CAN at 0x00
     // Start timer
     GpioTimePacket_Init(&tp_led_heartbeat, MCU_HEARTBEAT_LED_GPIO_Port,
                         MCU_HEARTBEAT_LED_Pin);
@@ -271,12 +271,12 @@ int main(void) {
         if (TimerPacket_FixedPulse(&timerpacket_ltc)) {
             // calling all CAN realated methods
             //			printf("CAN start\n");
-            CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
-                                    &safetyWarnings, &safetyStates);
-            CAN_Send_Cell_Summary(&msg, &modPackInfo);
-            CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
-            CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
-            CAN_Send_SOC(&msg, &modPackInfo, MAX_ACCUMULATOR_CAPACITY);
+            CAN_sendSafetyChecker(&msg, &modPackInfo, &safetyFaults,
+                                  &safetyWarnings, &safetyStates);
+            CAN_sendCellSummary(&msg, &modPackInfo);
+            CAN_sendVoltages(&msg, modPackInfo.cell_volt);
+            CAN_sendTemperatures(&msg, modPackInfo.cell_temp);
+            CAN_sendStateOfCharge(&msg, &modPackInfo, MAX_ACCUMULATOR_CAPACITY);
             //			printf("CAN end\n");
         }
     }
