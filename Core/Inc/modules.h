@@ -6,8 +6,8 @@
 #include "spi.h"
 #include "stm32f1xx_hal.h"
 
-#ifndef INC_6811_H_
-#define INC_6811_H_
+#ifndef INC_MODULES_H_
+#define INC_MODULES_H_
 
 #endif /* INC_6811_H_ */
 

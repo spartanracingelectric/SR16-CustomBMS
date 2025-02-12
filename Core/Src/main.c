@@ -32,11 +32,11 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "6811.h"
 #include "accumulator.h"
 #include "balance.h"
 #include "error.h"
 #include "hv.h"
+#include "modules.h"
 #include "safety.h"
 #include "stm32f1xx_hal.h"
 #include "string.h"

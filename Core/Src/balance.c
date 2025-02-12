@@ -1,6 +1,6 @@
 #include "balance.h"
 
-#include "6811.h"
+#include "modules.h"
 
 void Balance_performDischarge(uint16_t *read_volt, uint8_t total_ic,
                               uint16_t lowest);
