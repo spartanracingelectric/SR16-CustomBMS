@@ -47,12 +47,22 @@ void ADC_To_Pressure(uint8_t dev_idx, uint16_t *pressure, uint16_t adc_data) {
     pressure[dev_idx] = (uint16_t)(pressure_value * 10);  // 圧力値を整数に変換
 }
 
-void Atmos_Temp_To_Celsius(uint8_t dev_idx, uint16_t *pressure, uint16_t adc_data) {
+void Atmos_Temp_To_Celsius(uint8_t dev_idx, uint16_t *read_atmos_temp, uint16_t adc_data) {
     float voltage = adc_data * (3.0 / 65535.0);  // convert the adc value based on Vref
 
-    float pressure_value = (voltage - 0.5) * (100.0 / 4.0);  //Calculate pressure
+    float temperature_value = (voltage - 0.5) * (100.0 / 4.0);  //Calculate pressure
 
-    pressure[dev_idx] = (uint16_t)(pressure_value * 10);  // 圧力値を整数に変換
+    read_atmos_temp[dev_idx] = (uint16_t)(temperature_value * 10);  // 圧力値を整数に変換
+}
+
+void Get_AVG_Atmos_Temp(batteryModule *batt, uint8_t dev_idx, uint16_t *read_atmos_temp,){
+	float avg_temp = 0;
+	for(int i = 0; i < NUM_DEVICES; i++){
+		avg_temp += read_atmos_temp[i];
+		avg_temp /= NUM_DEVICES;
+	}
+
+	batt -> avg_atmos_temp = avg_temp;
 }
 
 void ADC_To_Humidity(uint8_t dev_idx, uint16_t *humidity, uint16_t adc_data) {
@@ -63,6 +73,15 @@ void ADC_To_Humidity(uint8_t dev_idx, uint16_t *humidity, uint16_t adc_data) {
     humidity[dev_idx] = (uint16_t)(humidity_value * 10);  // 圧力値を整数に変換
 }
 
+void Get_AVG_Humidity(batteryModule *batt, uint8_t dev_idx, uint16_t *humidity,){
+	float avg_humidity = 0;
+	for(int i = 0; i < NUM_DEVICES; i++){
+		avg_humidity += humidity[i];
+		avg_humidity /= NUM_DEVICES;
+	}
+
+	batt -> avg_humidity = avg_humidity;
+}
 
 
 void Read_Volt(uint16_t *read_volt) {
@@ -108,7 +127,7 @@ void Read_Pressure(uint16_t *read_pressure, uint16_t *read_auxreg) {
     }
 }
 
-void Read_Atmos_Temp(uint16_t *read_pressure, uint16_t *read_auxreg) {
+void Read_Atmos_Temp(uint16_t *v, uint16_t *read_auxreg) {
     LTC_WRCOMM(NUM_DEVICES, BMS_MUX[1]);
     LTC_STCOMM(2);
 
@@ -121,9 +140,11 @@ void Read_Atmos_Temp(uint16_t *read_pressure, uint16_t *read_auxreg) {
         Atmos_Temp_To_Celsius(dev_idx, read_pressure, data);
     	}
     }
+
+    Get_AVG_Atmos_Temp();
 }
 
-void Read_Humidity(uint16_t *read_pressure, uint16_t *read_auxreg) {
+void Read_Humidity(uint16_t *read_humidity, uint16_t *read_auxreg) {
     LTC_WRCOMM(NUM_DEVICES, BMS_MUX[1]);
     LTC_STCOMM(2);
 
@@ -136,5 +157,11 @@ void Read_Humidity(uint16_t *read_pressure, uint16_t *read_auxreg) {
         ADC_To_Humidity(dev_idx, read_pressure, data);
     	}
     }
+
+    Get_AVG_Humidity();
+}
+
+void Get_Due_point(){
+
 }
 

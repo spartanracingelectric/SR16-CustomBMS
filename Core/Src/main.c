@@ -227,6 +227,10 @@ int main(void)
 //				HAL_Delay(1); //this delay is for stablize mux
 			}
 			Read_Pressure(modPackInfo.pressure, modPackInfo.read_auxreg);
+
+			Read_Atmos_Temp(modPackInfo.atmos_temp, modPackInfo.read_auxreg);
+
+			Read_Humidity(modPackInfo.humidity, modPackInfo.read_auxreg);
 //			HAL_Delay(1);
 //			for(int i = 0; i < NUM_THERM_TOTAL; i++){
 //				printf("Temp[%d]: %d\n",i, modPackInfo.cell_temp[i]);
