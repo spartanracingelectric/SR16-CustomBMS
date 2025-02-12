@@ -26,9 +26,19 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
 
 /* USER CODE BEGIN Includes */
+
+#define SHUNT_SIGNAL_Pin GPIO_PIN_3
+#define SHUNT_SIGNAL_GPIO_Port GPIOC
+#define LTC_nCS_Pin GPIO_PIN_4
+#define LTC_nCS_GPIO_Port GPIOA
+#define MCU_ADC_VSENSE_Pin GPIO_PIN_5
+#define MCU_ADC_VSENSE_GPIO_Port GPIOC
+#define MCU_SHUTDOWN_SIGNAL_Pin GPIO_PIN_1
+#define MCU_SHUTDOWN_SIGNAL_GPIO_Port GPIOB
+#define MCU_HEARTBEAT_LED_Pin GPIO_PIN_6
+#define MCU_HEARTBEAT_LED_GPIO_Port GPIOC
 
 /* USER CODE END Includes */
 
@@ -46,4 +56,3 @@ void MX_GPIO_Init(void);
 }
 #endif
 #endif /*__ GPIO_H__ */
-
