@@ -35,7 +35,8 @@ extern "C" {
 extern SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN Private defines */
-
+extern volatile uint8_t spi_tx_busy; //declare with extern so other file can use this variable
+extern volatile uint8_t spi_rx_busy; //declare with extern so other file can use this variable
 /* USER CODE END Private defines */
 
 void MX_SPI1_Init(void);

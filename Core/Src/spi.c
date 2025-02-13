@@ -21,7 +21,7 @@
 #include "spi.h"
 
 /* USER CODE BEGIN 0 */
-volatile uint8_t spi_tx_busy = 0;
+volatile uint8_t spi_tx_busy = 0; //declare with volatile so this will not be optimized
 volatile uint8_t spi_rx_busy = 0;
 /* USER CODE END 0 */
 

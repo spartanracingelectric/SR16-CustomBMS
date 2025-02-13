@@ -5,7 +5,7 @@
 
 void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings, uint8_t *states);
 
-void Cell_Temperature_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings, uint8_t *high_temp_hysteresis);
+void Cell_Temperature_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings);
 
 void High_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings);
 
