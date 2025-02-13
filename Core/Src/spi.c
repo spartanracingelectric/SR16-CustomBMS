@@ -21,7 +21,8 @@
 #include "spi.h"
 
 /* USER CODE BEGIN 0 */
-
+volatile uint8_t spi_tx_busy = 0;
+volatile uint8_t spi_rx_busy = 0;
 /* USER CODE END 0 */
 
 SPI_HandleTypeDef hspi1;
@@ -162,6 +163,18 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi == &hspi1) {
+    	spi_tx_busy = 0;
+    }
+}
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
+    if (hspi == &hspi1) {
+    	spi_rx_busy = 0;
+    }
+}
+
 void LTC_nCS_High(void) {
 	HAL_GPIO_WritePin(LTC_nCS_GPIO_Port, LTC_nCS_Pin, GPIO_PIN_SET); //Pull CS high
 }

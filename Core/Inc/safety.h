@@ -3,9 +3,7 @@
 
 #include "main.h"
 
-void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings, uint8_t *states,
-                        uint8_t *high_volt_fault_lock,  uint8_t *low_volt_hysteresis, uint8_t *low_volt_fault_lock,
-                        uint8_t *cell_imbalance_hysteresis);
+void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings, uint8_t *states);
 
 void Cell_Temperature_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings, uint8_t *high_temp_hysteresis);
 
