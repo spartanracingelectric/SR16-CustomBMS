@@ -26,7 +26,8 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "main.h"
+#include "stm32f1xx_hal.h"
+#include "module.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -36,12 +37,16 @@ extern "C" {
 extern CAN_HandleTypeDef hcan1;
 
 /* USER CODE BEGIN Private defines */
-
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+typedef struct CANMessage{
+    CAN_TxHeaderTypeDef TxHeader;
+    uint32_t TxMailbox;
+    uint8_t data[8];
+} CANMessage;
 
 HAL_StatusTypeDef CAN_Start();
 HAL_StatusTypeDef CAN_Activate();

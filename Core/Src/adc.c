@@ -20,6 +20,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "adc.h"
 
+#include "stm32f1xx_hal.h"
+#include "errors.h"
+#include "gpio.h"
+
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */

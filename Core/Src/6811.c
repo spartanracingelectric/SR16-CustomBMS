@@ -1,6 +1,6 @@
 #include "6811.h"
 #include "spi.h"
-#include "main.h"
+#include "stm32f1xx_hal.h"
 
 uint8_t wrpwm_buffer[4 + (8 * NUM_DEVICES)];
 uint8_t wrcfg_buffer[4 + (8 * NUM_DEVICES)];

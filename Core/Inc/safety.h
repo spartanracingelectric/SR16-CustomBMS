@@ -1,7 +1,9 @@
 #ifndef INC_SAFETY_H_
 #define INC_SAFETY_H_
 
-#include "main.h"
+#include <stdint.h>
+
+#include "module.h"
 
 void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *warnings, uint8_t *states,
                         uint8_t *high_volt_fault_lock,  uint8_t *low_volt_hysteresis, uint8_t *low_volt_fault_lock,

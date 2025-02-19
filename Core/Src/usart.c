@@ -16,11 +16,16 @@
   *
   ******************************************************************************
   */
+#include "usart.h"
+
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include "usart.h"
+#include "errors.h"
+
+#include <stdint.h>
 
 /* USER CODE BEGIN 0 */
 static uint32_t last_tick = 0;

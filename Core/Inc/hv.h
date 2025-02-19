@@ -1,7 +1,9 @@
 #ifndef INC_HV_H_
 #define INC_HV_H_
 
-#include "main.h"
+#include <stdint.h>
+
+#include "module.h"
 
 #define ADC_RESOLUTION 4096.0f 	//12-bit ADC
 #define V_REF 3.3f  			//Reference voltage (V)

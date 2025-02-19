@@ -2,6 +2,7 @@
 #include <math.h>
 #include "6811.h"
 #include <stdio.h>
+#include <stdint.h>
 
 #define ntcNominal 10000.0f
 #define ntcSeriesResistance 10000.0f

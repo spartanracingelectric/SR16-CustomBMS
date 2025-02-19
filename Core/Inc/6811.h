@@ -1,13 +1,11 @@
-#include <stdint.h>
-#include <stdlib.h>
-#include "main.h"
-#include "spi.h"
-#include "string.h"
 
 #ifndef INC_6811_H_
 #define INC_6811_H_
 
-#endif /* INC_6811_H_ */
+#include <stdint.h>
+#include <stdlib.h>
+#include "spi.h"
+#include "string.h"
 
 #define LTC_CMD_RDCVA 0x0004
 #define LTC_CMD_RDCVB 0x0006
@@ -23,6 +21,19 @@
 #define LTC_SERIES_GROUPS_PER_RDCV 3 // Number of cell voltage groups per 8 byte register
 #define LTC_SERIES_GROUPS_PER_RDAUX 3
 #define NUM_AUX_SERIES_GROUPS 6 // Number of series groups
+
+#define NUM_DEVICES				8	//1 slave board
+#define NUM_CELL_SERIES_GROUP	12	//1 slave board
+#define NUM_CELLS				NUM_DEVICES*NUM_CELL_SERIES_GROUP	//multiple slave board
+#define NUM_THERM_PER_MOD		12
+#define NUM_THERM_TOTAL			NUM_DEVICES*NUM_THERM_PER_MOD
+#define NUM_AUX_GROUP			6
+#define NUM_AUXES				NUM_DEVICES*NUM_AUX_GROUP
+#define CYCLETIME_CAP			100 //100ms update delay
+#define LED_HEARTBEAT_DELAY_MS	50  //10ms update delay
+#define BALANCE 				0 	//FALSE
+#define MAX_CELL_CAPACITY 		3000
+#define MAX_BATTERY_CAPACITY 	NUM_DEVICES* MAX_CELL_CAPACITY
 
 typedef enum {
 	LTC_SPI_OK = 0x00U, //0b00000000
@@ -76,3 +87,4 @@ uint16_t LTC_Pec15_Calc(uint8_t len, //Number of bytes that will be used to calc
 		uint8_t *data //Array of data that will be used to calculate a PEC
 		);
 
+#endif /* INC_6811_H_ */

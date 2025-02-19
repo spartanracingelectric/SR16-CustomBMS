@@ -1,5 +1,7 @@
+#include "gpio.h"
+
 #include "safety.h"
-#include "main.h"
+#include "stm32f1xx_hal.h"
 #include "stdio.h"
 // ! Fault Thresholds
 
