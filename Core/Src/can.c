@@ -130,8 +130,12 @@ HAL_StatusTypeDef CAN_Activate() {
     return HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
-HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
+HAL_StatusTypeDef CAN_Send(CANMessage *ptr, uint32_t timeout) {
+	uint32_t startTick = HAL_GetTick();
     while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0) {
+    	if ((HAL_GetTick() - startTick) >= timeout) {
+    		return HAL_TIMEOUT;
+		}
     }
     return HAL_CAN_AddTxMessage(&hcan1, &ptr->TxHeader, (uint8_t *)ptr->data,
                                 &ptr->TxMailbox);
@@ -160,14 +164,14 @@ void Set_CAN_Id(CANMessage *ptr, uint32_t id) { ptr->TxHeader.StdId = id; }
 
 void Pack_CAN_Message_Voltage(CANMessage *buffer, uint16_t *read_volt){
 	for (int i = 0; i < NUM_CELLS; i += 4) {  //pack every 4 cell group in 1 CAN message
-		buffer->data[0] = read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
-		buffer->data[1] = (read_volt[i] >> 8) & 0xFF;
-		buffer->data[2] = read_volt[i + 1] & 0xFF;
-		buffer->data[3] = (read_volt[i + 1] >> 8) & 0xFF;
-		buffer->data[4] = read_volt[i + 2] & 0xFF;
-		buffer->data[5] = (read_volt[i + 2] >> 8) & 0xFF;
-		ptr->data[6] = read_volt[i + 3] & 0xFF;
-		ptr->data[7] = (read_volt[i + 3] >> 8) & 0xFF;
+		buffer->voltageBuffer[0] = read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
+		buffer->voltageBuffer[1] = (read_volt[i] >> 8) & 0xFF;
+		buffer->voltageBuffer[2] = read_volt[i + 1] & 0xFF;
+		buffer->voltageBuffer[3] = (read_volt[i + 1] >> 8) & 0xFF;
+		buffer->voltageBuffer[4] = read_volt[i + 2] & 0xFF;
+		buffer->voltageBuffer[5] = (read_volt[i + 2] >> 8) & 0xFF;
+		buffer->voltageBuffer[6] = read_volt[i + 3] & 0xFF;
+		buffer->voltageBuffer[7] = (read_volt[i + 3] >> 8) & 0xFF;
 	}
 }
 
@@ -175,44 +179,44 @@ void Pack_CAN_Message_Temeperature(CANMessage *buffer, uint16_t *read_temp){
 	for (int i = 0; i < NUM_THERM_TOTAL; i ++) {
 		temp8Bits[i] = (uint8_t)read_temp[i] & 0xFF;
 		for(int j = 0; j < 8; j++){
-			ptr->data[j] = temp8Bits[i] & 0xFF;
+			buffer->thermistorBuffer[j] = temp8Bits[i] & 0xFF;
 		}
 	}
 }
 
 void Pack_CAN_Message_Cell_Summary(CANMessage *buffer, batteryModule *batt){
-	ptr->data[0] = batt->cell_volt_highest & 0xFF;
-	ptr->data[1] = (batt->cell_volt_highest >> 8) & 0xFF;
-	ptr->data[2] = batt->cell_volt_lowest & 0xFF;
-	ptr->data[3] = (batt->cell_volt_lowest >> 8) & 0xFF;
-	ptr->data[4] = batt->cell_temp_highest;
-	ptr->data[5] = (batt->cell_temp_highest >> 8) & 0xFF;
-	ptr->data[6] = batt->cell_temp_lowest & 0xFF;
-	ptr->data[7] = (batt->cell_temp_lowest >> 8) & 0xFF;
+	buffer->summaryBuffer[0] = batt->cell_volt_highest & 0xFF;
+	buffer->summaryBuffer[1] = (batt->cell_volt_highest >> 8) & 0xFF;
+	buffer->summaryBuffer[2] = batt->cell_volt_lowest & 0xFF;
+	buffer->summaryBuffer[3] = (batt->cell_volt_lowest >> 8) & 0xFF;
+	buffer->summaryBuffer[4] = batt->cell_temp_highest;
+	buffer->summaryBuffer[5] = (batt->cell_temp_highest >> 8) & 0xFF;
+	buffer->summaryBuffer[6] = batt->cell_temp_lowest & 0xFF;
+	buffer->summaryBuffer[7] = (batt->cell_temp_lowest >> 8) & 0xFF;
 }
 
 void Pack_CAN_Message_Safety_Checker(CANMessage *buffer, batteryModule *batt, uint8_t *faults, uint8_t *warnings, uint8_t *states){
-	ptr->data[0] = *faults;
-	ptr->data[1] = *warnings;
-	ptr->data[2] = *states;
-	ptr->data[3] = batt->pack_voltage & 0xFF;
-	ptr->data[4] = (batt->pack_voltage >> 8) & 0xFF;
-	ptr->data[5] = (batt->pack_voltage >> 16) & 0xFF;
-	ptr->data[6] = (batt->pack_voltage >> 24) & 0xFF;
+	buffer->safetyBuffer[0] = *faults;
+	buffer->safetyBuffer[1] = *warnings;
+	buffer->safetyBuffer[2] = *states;
+	buffer->safetyBuffer[3] = batt->pack_voltage & 0xFF;
+	buffer->safetyBuffer[4] = (batt->pack_voltage >> 8) & 0xFF;
+	buffer->safetyBuffer[5] = (batt->pack_voltage >> 16) & 0xFF;
+	buffer->safetyBuffer[6] = (batt->pack_voltage >> 24) & 0xFF;
 }
 
 void Pack_CAN_Message_SoC(CANMessage *buffer, batteryModule *batt,
     uint16_t max_capacity){
 
-    ptr->data[0] = batt->soc;
-    ptr->data[1] = batt->soc >> 8;
+	buffer->socBuffer[0] = batt->soc;
+	buffer->socBuffer[1] = batt->soc >> 8;
 
     uint8_t percent = (uint8_t)(batt->soc * 100 / max_capacity);
-    ptr->data[2] = percent;
-    ptr->data[3] = batt->current & 0xFF;
-    ptr->data[4] = (batt->current >> 8) & 0xFF;
-    ptr->data[5] = (batt->current >> 16) & 0xFF;
-    ptr->data[6] = (batt->current >> 24)& 0xFF;
+    buffer->socBuffer[2] = percent;
+    buffer->socBuffer[3] = batt->current & 0xFF;
+    buffer->socBuffer[4] = (batt->current >> 8) & 0xFF;
+    buffer->socBuffer[5] = (batt->current >> 16) & 0xFF;
+    buffer->socBuffer[6] = (batt->current >> 24)& 0xFF;
 }
 
 void CAN_Send_Voltage(CANMessage *ptr, uint16_t *read_volt) {
