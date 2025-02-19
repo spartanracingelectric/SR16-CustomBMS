@@ -49,10 +49,20 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr);
 void CAN_SettingsInit(CANMessage *ptr);
 void Set_CAN_Id(CANMessage *ptr, uint32_t id);
 
+void Pack_CAN_Message_Voltage(CANMessage *ptr, uint16_t *read_volt);
+
+void Pack_CAN_Message_Temeperature(CANMessage *ptr, uint16_t *read_temp);
+
+void Pack_CAN_Message_Cell_Summary(CANMessage *ptr, batteryModule *batt);
+
+void Pack_CAN_Message_Safety_Checker(CANMessage *ptr, batteryModule *batt, uint8_t *faults, uint8_t *warnings, uint8_t *states);
+void Pack_CAN_Message_SoC(CANMessage *ptr, batteryModule *batt,
+        uint16_t max_capacity);
+
 void CAN_Send_Voltage(CANMessage *ptr, uint16_t *read_volt);
 void CAN_Send_Temperature(CANMessage *ptr, uint16_t *read_temp);
-void CAN_Send_Cell_Summary(CANMessage *ptr, struct batteryModule *batt);
-void CAN_Send_Safety_Checker(CANMessage *ptr, struct batteryModule *batt, uint8_t* faults, uint8_t* warnings, uint8_t *states);
+void CAN_Send_Cell_Summary(CANMessage *ptr, batteryModule *batt);
+void CAN_Send_Safety_Checker(CANMessage *ptr, batteryModule *batt, uint8_t* faults, uint8_t* warnings, uint8_t *states);
 void CAN_Send_SOC(CANMessage *ptr, batteryModule *batt, uint16_t max_capacity);
 /* USER CODE END Prototypes */
 
