@@ -36,7 +36,15 @@ extern "C" {
 extern CAN_HandleTypeDef hcan1;
 
 /* USER CODE BEGIN Private defines */
-
+#define CAN_ID_VOLTAGE 				1584
+#define CAN_ID_THERMISTOR 			1664
+#define CAN_ID_SUMMARY				1570
+#define CAN_ID_SAFETY 				1536
+#define CAN_ID_SOC 					1537
+#define CAN_BYTE_NUM				8
+#define CAN_MESSAGE_NUM_VOLTAGE 	NUM_CELLS * 2 / CAN_BYTE_NUM
+#define CAN_MESSAGE_NUM_THERMISTOR 	NUM_THERM_TOTAL * 2 / CAN_BYTE_NUM
+//#define CAN_ID_Balance 		0x630
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);

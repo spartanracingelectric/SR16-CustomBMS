@@ -121,7 +121,7 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *canHandle) {
 }
 
 /* USER CODE BEGIN 1 */
-uint8_t  temp8Bits[NUM_THERM_TOTAL];
+uint8_t  thermistor8BitsPrevious[NUM_THERM_TOTAL];
 // uint8_t CAN_TX_HALT = 1; //halt frag to send it to mailbox
 
 HAL_StatusTypeDef CAN_Start() { return HAL_CAN_Start(&hcan1); }
@@ -151,38 +151,74 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr, uint32_t timeout) {
 //	CAN_TX_HALT = 0;
 // }
 
-void CAN_SettingsInit(CANMessage *ptr) {
+void CAN_SettingsInit(CANMessage *buffers) {
     CAN_Start();
     CAN_Activate();
-    ptr->TxHeader.IDE = CAN_ID_STD;
-    ptr->TxHeader.StdId = 0x00;
-    ptr->TxHeader.RTR = CAN_RTR_DATA;
-    ptr->TxHeader.DLC = 8;
+    buffers->TxHeader.IDE = CAN_ID_STD;
+    buffers->TxHeader.StdId = 0x00;
+    buffers->TxHeader.RTR = CAN_RTR_DATA;
+    buffers->TxHeader.DLC = 8;
+    for (int i = 0; i < 12; i++) {
+          for (int j = 0; j < 8; j++) {
+              buffers[i].thermistorBuffer[j] = 0xFF;
+              buffers[i]->voltageBuffer[j] = 0xFF;
+          }
+      }
 }
 
 void Set_CAN_Id(CANMessage *ptr, uint32_t id) { ptr->TxHeader.StdId = id; }
 
-void Pack_CAN_Message_Voltage(CANMessage *buffer, uint16_t *read_volt){
+void Send_CAN_Message_Voltage(CANMessage *buffer, uint16_t *read_volt){
+	uint8_t CAN_ID = CAN_ID_Thermistor;
 	for (int i = 0; i < NUM_CELLS; i += 4) {  //pack every 4 cell group in 1 CAN message
-		buffer->voltageBuffer[0] = read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
-		buffer->voltageBuffer[1] = (read_volt[i] >> 8) & 0xFF;
-		buffer->voltageBuffer[2] = read_volt[i + 1] & 0xFF;
-		buffer->voltageBuffer[3] = (read_volt[i + 1] >> 8) & 0xFF;
-		buffer->voltageBuffer[4] = read_volt[i + 2] & 0xFF;
-		buffer->voltageBuffer[5] = (read_volt[i + 2] >> 8) & 0xFF;
-		buffer->voltageBuffer[6] = read_volt[i + 3] & 0xFF;
-		buffer->voltageBuffer[7] = (read_volt[i + 3] >> 8) & 0xFF;
+		buffer[i]->voltageBuffer[0] = read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
+		buffer[i]->voltageBuffer[1] = (read_volt[i] >> 8) & 0xFF;
+		buffer[i]->voltageBuffer[2] = read_volt[i + 1] & 0xFF;
+		buffer[i]->voltageBuffer[3] = (read_volt[i + 1] >> 8) & 0xFF;
+		buffer[i]->voltageBuffer[4] = read_volt[i + 2] & 0xFF;
+		buffer[i]->voltageBuffer[5] = (read_volt[i + 2] >> 8) & 0xFF;
+		buffer[i]->voltageBuffer[6] = read_volt[i + 3] & 0xFF;
+		buffer[i]->voltageBuffer[7] = (read_volt[i + 3] >> 8) & 0xFF;
 	}
+	Set_CAN_Id(ptr, CAN_ID);
+		CAN_Send(ptr);
+		CAN_ID++;
 }
 
-void Pack_CAN_Message_Temeperature(CANMessage *buffer, uint16_t *read_temp){
-	for (int i = 0; i < NUM_THERM_TOTAL; i ++) {
-		temp8Bits[i] = (uint8_t)read_temp[i] & 0xFF;
-		for(int j = 0; j < 8; j++){
-			buffer->thermistorBuffer[j] = temp8Bits[i] & 0xFF;
-		}
-	}
+void Send_CAN_Message_Temperature(CANMessage *buffer, uint16_t *read_temp) {
+    uint8_t index = 0;
+    uint8_t messageIndex = 0;
+    uint8_t CAN_ID = CAN_ID_Thermistor;
+
+    for (int i = 0; i < NUM_THERM_TOTAL; i++) {
+        uint8_t temp8Bits = (uint8_t)(read_temp[i] & 0xFF);
+
+        if (thermistor8BitsPrevious[i] != temp8Bits) {
+            thermistor8BitsPrevious[i] = temp8Bits;
+            buffer[messageIndex].thermistorBuffer[index++] = temp8Bits;
+
+            if (index >= CAN_BYTE_NUM) {
+                index = 0;
+                messageIndex++;
+
+                if (messageIndex >= CAN_MESSAGE_NUM_VOLTAGE) {
+                    break;
+                }
+            }
+        }
+    }
+
+    while (index < CAN_BYTE_NUM) {
+        buffer[messageIndex].thermistorBuffer[index++] = 0xFF;
+    }
+
+    for (int i = 0; i < messageIndex + (index > 0 ? 1 : 0); i++) {
+        Set_CAN_Id(&buffer[i], CAN_ID);
+        CAN_Send(&buffer[i]);
+        CAN_ID++;
+    }
 }
+
 
 void Pack_CAN_Message_Cell_Summary(CANMessage *buffer, batteryModule *batt){
 	buffer->summaryBuffer[0] = batt->cell_volt_highest & 0xFF;
@@ -234,7 +270,6 @@ void CAN_Send_Temperature(CANMessage *ptr, uint16_t *read_temp) {
 	CAN_ID++;
 	Set_CAN_Id(ptr, CAN_ID);
 //	printf("Temperature\n");
-	}
 }
 
 void CAN_Send_Cell_Summary(CANMessage *ptr, batteryModule *batt) {
