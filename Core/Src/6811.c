@@ -33,9 +33,8 @@ void Wakeup_Sleep(void) {
 }
 
 /* Read and store raw cell voltages at uint8_t 2d pointer */
-LTC_SPI_StatusTypeDef LTC_getCellVoltages(uint16_t *read_voltages) {
-	LTC_SPI_StatusTypeDef ret = LTC_SPI_OK;
-	LTC_SPI_StatusTypeDef hal_ret;
+LTC_SPI_StatusTypeDef LTC6811_Voltage_getData(uint16_t *read_voltages) {
+	LTC_SPI_StatusTypeDef spiStatus = LTC_SPI_OK;
 	const uint8_t ARR_SIZE_REG = NUM_DEVICES * REG_LEN;
 	uint8_t read_voltages_reg[ARR_SIZE_REG]; // Increased in size to handle multiple devices
 
@@ -44,25 +43,37 @@ LTC_SPI_StatusTypeDef LTC_getCellVoltages(uint16_t *read_voltages) {
 		uint8_t cmd[4];
 		uint16_t cmd_pec;
 
-		cmd[0] = (0xFF & (LTC_CMD_RDCV[i] >> 8)); // RDCV Register
-		cmd[1] = (0xFF & (LTC_CMD_RDCV[i]));	  // RDCV Register
+		cmd[0] = (LTC_CMD_RDCV[i] >> 8) & 0xFF; // Set RDCV Command
+		cmd[1] = LTC_CMD_RDCV[i] & 0xFF;		// Set RDCV Command
 		cmd_pec = LTC_Pec15_Calc(2, cmd);
-		cmd[2] = (uint8_t) (cmd_pec >> 8);
-		cmd[3] = (uint8_t) (cmd_pec);
+		cmd[2] = (cmd_pec >> 8) & 0xFF;
+		cmd[3] = cmd_pec & 0xFF;
 
 		Wakeup_Idle(); // Wake LTC up
 
 		LTC_nCS_Low(); // Pull CS low
 
-		hal_ret = HAL_SPI_Transmit(&hspi1, (uint8_t*) cmd, 4, 100);
-		if (hal_ret) {									// Non-zero means error
-			ret |= (1 << (hal_ret + LTC_SPI_TX_BIT_OFFSET)); // TX error
+		spiStatus = HAL_SPI_Transmit(&hspi1, (uint8_t*) cmd, 4, 100);
+		if (spiStatus != HAL_OK) {
+		    if (spiStatus == HAL_TIMEOUT) {
+		    	return LTC_SPI_TX_TIMEOUT;  	// timeout error
+		    } else if (spiStatus == HAL_BUSY) {
+		    	return LTC_SPI_TX_BUSY; 		// busy error
+		    } else {
+		    	return LTC_SPI_TX_ERROR; 		// normal error
+		    }
 		}
 
-		hal_ret = HAL_SPI_Receive(&hspi1, (uint8_t*) read_voltages_reg,
+		spiStatus = HAL_SPI_Receive(&hspi1, (uint8_t*) read_voltages_reg,
 				ARR_SIZE_REG, 100);
-		if (hal_ret) {									// Non-zero means error
-			ret |= (1 << (hal_ret + LTC_SPI_RX_BIT_OFFSET)); // RX error
+		if (spiStatus != HAL_OK) {
+			if (spiStatus == HAL_TIMEOUT) {
+				return LTC_SPI_RX_TIMEOUT;  	// timeout error
+			} else if (spiStatus == HAL_BUSY) {
+				return LTC_SPI_RX_BUSY; 		// busy error
+			} else {
+				return LTC_SPI_RX_ERROR; 		// normal error
+			}
 		}
 		LTC_nCS_High(); // Pull CS high
 
@@ -79,7 +90,7 @@ LTC_SPI_StatusTypeDef LTC_getCellVoltages(uint16_t *read_voltages) {
 		}
 	}
 
-	return ret;
+	return spiStatus;
 }
 
 /**
@@ -239,9 +250,9 @@ void LTC_SPI_requestData(uint8_t len) {
 	LTC_nCS_High();
 }
 
-LTC_SPI_StatusTypeDef LTC_readGPIOs(uint16_t *read_auxiliary) {
-	LTC_SPI_StatusTypeDef ret = LTC_SPI_OK;
-	LTC_SPI_StatusTypeDef hal_ret;
+
+LTC_SPI_StatusTypeDef LTC6811_GPIO_getData(uint16_t *read_auxiliary) {
+	LTC_SPI_StatusTypeDef spiStatus = LTC_SPI_OK;
 	const uint8_t ARR_SIZE_REG = NUM_DEVICES * REG_LEN;
 	uint8_t read_auxiliary_reg[ARR_SIZE_REG]; // Increased in size to handle multiple devices
 
@@ -260,15 +271,27 @@ LTC_SPI_StatusTypeDef LTC_readGPIOs(uint16_t *read_auxiliary) {
 
 		LTC_nCS_Low(); // Pull CS low
 
-		hal_ret = HAL_SPI_Transmit(&hspi1, (uint8_t*) cmd, 4, 100);
-		if (hal_ret) {									// Non-zero means error
-			ret |= (1 << (hal_ret + LTC_SPI_TX_BIT_OFFSET)); // TX error
+		spiStatus = HAL_SPI_Transmit(&hspi1, (uint8_t*) cmd, 4, 100);
+		if (spiStatus != HAL_OK) {
+		    if (spiStatus == HAL_TIMEOUT) {
+		    	return LTC_SPI_TX_TIMEOUT;  	// timeout error
+		    } else if (spiStatus == HAL_BUSY) {
+		    	return LTC_SPI_TX_BUSY; 		// busy error
+		    } else {
+		    	return LTC_SPI_TX_ERROR; 		// normal error
+		    }
 		}
 
-		hal_ret = HAL_SPI_Receive(&hspi1, (uint8_t*) read_auxiliary_reg,
+		spiStatus = HAL_SPI_Receive(&hspi1, (uint8_t*) read_voltages_reg,
 				ARR_SIZE_REG, 100);
-		if (hal_ret) {									// Non-zero means error
-			ret |= (1 << (hal_ret + LTC_SPI_RX_BIT_OFFSET)); // RX error
+		if (spiStatus != HAL_OK) {
+			if (spiStatus == HAL_TIMEOUT) {
+				return LTC_SPI_RX_TIMEOUT;  	// timeout error
+			} else if (spiStatus == HAL_BUSY) {
+				return LTC_SPI_RX_BUSY; 		// busy error
+			} else {
+				return LTC_SPI_RX_ERROR; 		// normal error
+			}
 		}
 
 		LTC_nCS_High(); // Pull CS high
@@ -287,13 +310,13 @@ LTC_SPI_StatusTypeDef LTC_readGPIOs(uint16_t *read_auxiliary) {
 
 	}
 
-	return ret;
+	return spiStatus;
 }
 
 /*
  Starts cell voltage conversion
  */
-void LTC_startADCVoltage(uint8_t MD,  // ADC Mode
+void LTC6811_Voltage_startADC(uint8_t MD,  // ADC Mode
 		uint8_t DCP, // Discharge Permit
 		uint8_t CH   // Cell Channels to be measured
 		) {
@@ -315,7 +338,7 @@ void LTC_startADCVoltage(uint8_t MD,  // ADC Mode
 	LTC_nCS_High();
 }
 
-void LTC_startADC_GPIO(uint8_t MD, // ADC Mode
+void LTC6811_GPIO_startADC(uint8_t MD, // ADC Mode
 		uint8_t CHG // GPIO Channels to be measured)
 		) {
 	uint8_t cmd[4];
