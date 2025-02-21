@@ -165,15 +165,16 @@ int main(void)
 //				printf(" Cell: %d, Temp: %d\n", i, modPackInfo.cell_temp[i]);
 	}
 	if (indexpause == 8) {
-		LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[0]);
-		LTC_SPI_requestData(2);
+
+		LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[0]);
+		LTC6811_SPI_requestData(2);
 		tempindex = 8;
 		indexpause = NUM_THERM_PER_MOD;
 //				HAL_Delay(1); //this delay is for stablize mux
 	}
 	else if (indexpause == NUM_THERM_PER_MOD) {
-		LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[1]);
-		LTC_SPI_requestData(2);
+		LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[1]);
+		LTC6811_SPI_requestData(2);
 		indexpause = 8;
 		tempindex = 0;
 //				HAL_Delay(1); //this delay is for stablize mux
@@ -226,8 +227,8 @@ int main(void)
 //				printf(" Cell: %d, Temp: %d\n", i, modPackInfo.cell_temp[i]);
 			}
 			if (indexpause == 8) {
-				LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[0]);
-				LTC_SPI_requestData(2);
+				LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[0]);
+				LTC6811_SPI_requestData(2);
 				tempindex = 8;
 				indexpause = NUM_THERM_PER_MOD;
 //				HAL_Delay(1); //this delay is for stablize mux
@@ -237,8 +238,8 @@ int main(void)
 				Read_Humidity(&modPackInfo);
 				Read_Atmos_Temp(&modPackInfo);
 				Get_Dew_Point(&modPackInfo);
-				LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[1]);
-				LTC_SPI_requestData(2);
+				LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[1]);
+				LTC6811_SPI_requestData(2);
 				indexpause = 8;
 				tempindex = 0;
 //				HAL_Delay(1); //this delay is for stablize mux

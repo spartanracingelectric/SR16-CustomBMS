@@ -42,33 +42,33 @@ void Wakeup_Idle(void);
 
 void Wakeup_Sleep(void);
 
-LTC_SPI_StatusTypeDef LTC_getCellVoltages(uint16_t *read_voltages);
-
-/* write to PWM register to control balancing functionality */
-void LTC_writePWM(uint8_t total_ic, uint8_t pwm);
-
-void LTC_writeCFG(uint8_t total_ic, //The number of ICs being written to
-		uint8_t config[][6] //A two dimensional array of the configuration data that will be written
-		);
-
-void LTC_SPI_writeCommunicationSetting(uint8_t total_ic, //The number of ICs being written to
-		uint8_t comm[6] //A two dimensional array of the comm data that will be written
-		);
-
-void LTC_SPI_requestData(uint8_t len);
-
-LTC_SPI_StatusTypeDef LTC_readGPIOs(uint16_t *read_auxiliary);
-
-void LTC_startADCVoltage(uint8_t MD, //ADC Mode
+void LTC6811_Voltage_startADC(uint8_t MD, //ADC Mode
 		uint8_t DCP, //Discharge Permit
 		uint8_t CH //Cell Channels to be measured
 		);
 
-void LTC_startADC_GPIO(uint8_t MD, //ADC Mode
+void LTC6811_GPIO_startADC(uint8_t MD, //ADC Mode
 		uint8_t CHG //GPIO Channels to be measured)
 		);
 
-int32_t LTC_POLLADC();
+int32_t LTC6811_pollingCheckADC();
+
+LTC_SPI_StatusTypeDef LTC6811_Voltage_getData(uint16_t *read_voltages);
+
+LTC_SPI_StatusTypeDef LTC6811_GPIO_getData(uint16_t *read_auxiliary);
+
+/* write to PWM register to control balancing functionality */
+void LTC6811_writePWM(uint8_t total_ic, uint8_t pwm);
+
+void LTC6811_writeCFG(uint8_t total_ic, //The number of ICs being written to
+		uint8_t config[][6] //A two dimensional array of the configuration data that will be written
+		);
+
+void LTC6811_SPI_writeCommunicationSetting(uint8_t total_ic, //The number of ICs being written to
+		uint8_t comm[6] //A two dimensional array of the comm data that will be written
+		);
+
+void LTC6811_SPI_requestData(uint8_t len);
 
 int Calc_Pack_Voltage(uint16_t *read_voltages);
 

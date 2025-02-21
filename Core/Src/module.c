@@ -65,26 +65,29 @@ void Get_Actual_Temps(uint8_t dev_idx, uint8_t tempindex, uint16_t *actual_temp,
 
 void Read_Volt(uint16_t *read_volt) {
 //	printf("volt start\n");
-	LTC_startADCVoltage(MD_NORMAL, DCP_DISABLED, CELL_CH_ALL);//ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+	LTC6811_Voltage_startADC(MD_NORMAL, DCP_DISABLED, CELL_CH_ALL);//ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+//	LTC6811_pollingCheckADC;
 	HAL_Delay(NORMAL_DELAY);	//FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
-	LTC_getCellVoltages((uint16_t*) read_volt);
+	LTC6811_Voltage_getData((uint16_t*) read_volt);
 //	printf("volt end\n");
 }
 
 void Read_Temp(uint8_t tempindex, uint16_t *read_temp, uint16_t *read_auxreg) {
 
 //	printf("Temperature read start\n");
-	LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[tempindex]);
-	LTC_SPI_requestData(2);
+    LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[tempindex]);
+    LTC6811_SPI_requestData(2);
 	//end sending to mux to read temperatures
 	if (tempindex == 0) {
-		LTC_startADC_GPIO(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+		LTC6811_GPIO_startADC(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+//		LTC6811_pollingCheckADC;
 		HAL_Delay(NORMAL_DELAY + 2); //FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 	} else {
-		LTC_startADC_GPIO(MD_FAST, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+		LTC6811_GPIO_startADC(MD_FAST, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+//		LTC6811_pollingCheckADC;
 		HAL_Delay(FAST_DELAY); //FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 	}
-	if (!LTC_readGPIOs((uint16_t*) read_auxreg)) // Set to read back all aux registers
+	if (!LTC6811_GPIO_getData((uint16_t*) read_auxreg)) // Set to read back all aux registers
 			{
 		for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
 			//Wakeup_Idle();
@@ -100,13 +103,13 @@ void Read_Temp(uint8_t tempindex, uint16_t *read_temp, uint16_t *read_auxreg) {
 
 
 void Read_Pressure(batteryModule *batt) {
-	LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[12]);
-	LTC_SPI_requestData(2);
+	LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[12]);
+    LTC6811_SPI_requestData(2);
 
-	LTC_startADC_GPIO(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+    LTC6811_GPIO_startADC(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
     HAL_Delay(NORMAL_DELAY); //FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 
-    if (!LTC_readGPIOs((uint16_t*) batt->read_auxreg)) {
+    if (!LTC6811_GPIO_getData((uint16_t*) batt->read_auxreg)) {
     	for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
             uint16_t data = batt->read_auxreg[dev_idx * NUM_AUX_GROUP];
             ADC_To_Pressure(dev_idx, batt->pressure, data);
@@ -115,13 +118,13 @@ void Read_Pressure(batteryModule *batt) {
 }
 
 void Read_Atmos_Temp(batteryModule *batt) {
-	LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[14]);
-	LTC_SPI_requestData(2);
+	LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[14]);
+    LTC6811_SPI_requestData(2);
 
-	LTC_startADC_GPIO(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+    LTC6811_GPIO_startADC(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
     HAL_Delay(NORMAL_DELAY); //FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 
-    if (!LTC_readGPIOs((uint16_t*) batt->read_auxreg)) {
+    if (!LTC6811_GPIO_getData((uint16_t*) batt->read_auxreg)) {
 
     	for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
 
@@ -152,13 +155,13 @@ void Get_Dew_Point(batteryModule *batt) {
 }
 
 void Read_Humidity(batteryModule *batt) {
-	LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[13]);
-	LTC_SPI_requestData(2);
+	LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX[13]);
+    LTC6811_SPI_requestData(2);
 
-	LTC_startADC_GPIO(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
+    LTC6811_GPIO_startADC(MD_NORMAL, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
     HAL_Delay(NORMAL_DELAY); //FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 
-    if (!LTC_readGPIOs((uint16_t*) batt->read_auxreg)) {
+    if (!LTC6811_GPIO_getData((uint16_t*) batt->read_auxreg)) {
     	for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
         uint16_t data = batt->read_auxreg[dev_idx * NUM_AUX_GROUP];
         ADC_To_Humidity(dev_idx, batt->humidity, data);
