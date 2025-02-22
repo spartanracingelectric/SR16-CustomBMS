@@ -19,6 +19,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
+#include "usart.h"
+#include "stdio.h"
 
 /* USER CODE BEGIN 0 */
 /* USER CODE END 0 */
@@ -187,22 +189,19 @@ void Set_CAN_Id(CANMessage *ptr, uint32_t id) { ptr->TxHeader.StdId = id; }
 
 void Send_CAN_Message_Voltage(CANMessage *buffer, uint16_t *read_volt){
 	uint8_t index = 0;
-	uint8_t messageIndex = 0;
 	uint32_t CAN_ID = (uint32_t)CAN_ID_VOLTAGE;
 	for (int i = 0; i < NUM_CELLS; i++) {  //pack every 4 cell group in 1 CAN message
-		buffer[messageIndex].voltageBuffer[index] = read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
-		buffer[messageIndex].voltageBuffer[index + 1] = (read_volt[i] >> 8) & 0xFF;
+		buffer->voltageBuffer[index] = read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
+		buffer->voltageBuffer[index + 1] = (read_volt[i] >> 8) & 0xFF;
 		index += 2;
 
 		if(index >= CAN_BYTE_NUM){
 			index = 0;
-			messageIndex++;
+			Set_CAN_Id(buffer, CAN_ID);
+			CAN_Send(buffer);
+			CAN_ID++;
+//			printf("CAN_ID: 0x%X", CAN_ID);
 		}
-	}
-	for (int i = 0; i < CAN_MESSAGE_NUM_VOLTAGE; i++) {
-		Set_CAN_Id(&buffer[i], CAN_ID);
-		CAN_Send(&buffer[i]);
-		CAN_ID++;
 	}
 }
 
@@ -216,11 +215,15 @@ void Send_CAN_Message_Temperature(CANMessage *buffer, uint16_t *read_temp) {
 
         if (thermistor8BitsPrevious[i] != temp8Bits) {
             thermistor8BitsPrevious[i] = temp8Bits;
-            buffer[messageIndex].thermistorBuffer[index++] = temp8Bits;
+            buffer->thermistorBuffer[index++] = temp8Bits;
 
             if (index >= CAN_BYTE_NUM) {
                 index = 0;
                 messageIndex++;
+                Set_CAN_Id(buffer, CAN_ID);
+                CAN_Send(buffer);
+                CAN_ID++;
+                printf("sending CAN");
 
                 if (messageIndex >= CAN_MESSAGE_NUM_VOLTAGE) {
                     break;
@@ -231,12 +234,6 @@ void Send_CAN_Message_Temperature(CANMessage *buffer, uint16_t *read_temp) {
 
     while (index < CAN_BYTE_NUM) {
         buffer[messageIndex].thermistorBuffer[index++] = 0xFF;
-    }
-
-    for (int i = 0; i < messageIndex + (index > 0 ? 1 : 0); i++) {
-        Set_CAN_Id(&buffer[i], CAN_ID);
-        CAN_Send(&buffer[i]);
-        CAN_ID++;
     }
 }
 

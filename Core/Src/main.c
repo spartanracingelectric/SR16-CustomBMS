@@ -190,12 +190,12 @@ int main(void)
 
 	ReadHVInput(&modPackInfo);
 
-	Send_CAN_Message_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
-						&safetyWarnings, &safetyStates);
-	Send_CAN_Message_Cell_Summary(&msg, &modPackInfo);
-	Send_CAN_Message_Voltage(&msg, modPackInfo.cell_volt);
-	Send_CAN_Message_Temperature(&msg, modPackInfo.cell_temp);
-	Send_CAN_Message_SoC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
+//	Send_CAN_Message_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
+//						&safetyWarnings, &safetyStates);
+//	Send_CAN_Message_Cell_Summary(&msg, &modPackInfo);
+//	Send_CAN_Message_Voltage(&msg, modPackInfo.cell_volt);
+//	Send_CAN_Message_Temperature(&msg, modPackInfo.cell_temp);
+//	Send_CAN_Message_SoC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
 
   /* USER CODE END 2 */
 
@@ -267,12 +267,12 @@ int main(void)
 //			if (TimerPacket_FixedPulse(&timerpacket_ltc)) {
 			//calling all CAN realated methods
 //			printf("CAN start\n");
-			Send_CAN_Message_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
-									&safetyWarnings, &safetyStates);
-			Send_CAN_Message_Cell_Summary(&msg, &modPackInfo);
-			Send_CAN_Message_Voltage(&msg, modPackInfo.cell_volt);
-			Send_CAN_Message_Temperature(&msg, modPackInfo.cell_temp);
-			Send_CAN_Message_SoC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
+//			Send_CAN_Message_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
+//									&safetyWarnings, &safetyStates);
+//			Send_CAN_Message_Cell_Summary(&msg, &modPackInfo);
+//			Send_CAN_Message_Voltage(&msg, modPackInfo.cell_volt);
+////			Send_CAN_Message_Temperature(&msg, modPackInfo.cell_temp);
+//			Send_CAN_Message_SoC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
 //			printf("CAN end\n");
 //			}
 	}
