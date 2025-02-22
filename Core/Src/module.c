@@ -42,8 +42,8 @@ void Get_Actual_Temps(uint8_t dev_idx, uint8_t tempindex, uint16_t *actual_temp,
 void Read_Volt(uint16_t *read_volt) {
 //	printf("volt start\n");
 	LTC6811_Voltage_startADC(MD_NORMAL, DCP_DISABLED, CELL_CH_ALL);//ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
-	LTC6811_pollingCheckADC;
-//	HAL_Delay(NORMAL_DELAY);	//FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
+//	LTC6811_pollingCheckADC();
+	HAL_Delay(NORMAL_DELAY);	//FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 	LTC6811_Voltage_getData((uint16_t*) read_volt);
 //	printf("volt end\n");
 }
@@ -52,10 +52,10 @@ void Read_Temp(uint8_t tempindex, uint16_t *read_temp, uint16_t *read_auxreg) {
 //	printf("Temperature read start\n");
 	LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_THERM[tempindex]);
 	LTC6811_SPI_requestData(2);
-	//end sending to mux to read temperatures
+//	end sending to mux to read temperatures
 	LTC6811_GPIO_startADC(MD_FAST, 1); //ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
-	LTC6811_pollingCheckADC;
-//	HAL_Delay(FAST_DELAY); //FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
+//	LTC6811_pollingCheckADC();
+	HAL_Delay(FAST_DELAY); //FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 	if (!LTC6811_GPIO_getData((uint16_t*) read_auxreg)) // Set to read back all aux registers
 			{
 		for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
