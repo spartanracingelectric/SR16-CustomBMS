@@ -66,7 +66,7 @@ void Get_Actual_Temps(uint8_t dev_idx, uint8_t tempindex, uint16_t *actual_temp,
 void Read_Volt(uint16_t *read_volt) {
 //	printf("volt start\n");
 	LTC6811_Voltage_startADC(MD_NORMAL, DCP_DISABLED, CELL_CH_ALL);//ADC mode: MD_FILTERED, MD_NORMAL, MD_FAST
-//	LTC6811_pollingCheckADC;
+//	LTC6811_pollingCheckADC();
 	HAL_Delay(NORMAL_DELAY);	//FAST_DELAY, NORMAL_DELAY, FILTERD_DELAY;
 	LTC6811_Voltage_getData((uint16_t*) read_volt);
 //	printf("volt end\n");
