@@ -214,16 +214,16 @@ void CAN_Send_Cell_Summary(CANMessage *ptr, struct batteryModule *batt) {
 //	printf("Summary\n");
 }
 
-void CAN_Send_Safety_Checker(CANMessage *ptr, struct batteryModule *batt, uint8_t *faults, uint8_t *warnings, uint8_t *states) {
+void CAN_Send_Safety_Checker(CANMessage *ptr, struct batteryModule *batt, uint8_t *faults, uint8_t *warnings) {
+	batt->cell_difference = batt->cell_volt_highest - batt->cell_volt_lowest;
 	uint16_t CAN_ID = 0x600;
 	Set_CAN_Id(ptr, CAN_ID);
 	ptr->data[0] = *faults;
 	ptr->data[1] = *warnings;
-	ptr->data[2] = *states;
-	ptr->data[3] = batt->pack_voltage;
-	ptr->data[4] = (batt->pack_voltage) >> 8;
-	ptr->data[5] = (batt->pack_voltage) >> 16;
-	ptr->data[6] = (batt->pack_voltage) >> 24;
+	ptr->data[2] = batt->cell_difference & 0xFF;
+	ptr->data[3] = (batt->cell_difference >> 8) & 0xFF;
+	ptr->data[4] = batt->pack_voltage & 0xFF;
+	ptr->data[5] = (batt->pack_voltage >> 8) & 0xFF;
 	CAN_Send(ptr);
 //	printf("Faults\n");
 }
@@ -243,5 +243,33 @@ void CAN_Send_SOC(struct CANMessage *ptr, batteryModule *batt,
     ptr->data[5] = batt->current >> 16;
     ptr->data[6] = batt->current >> 24;
     CAN_Send(ptr);
+}
+
+void CAN_Send_Balance_Status(struct CANMessage *ptr, uint16_t *balance_status){
+
+    uint16_t CAN_ID = 0x623;
+	Set_CAN_Id(ptr, CAN_ID);
+
+	ptr->data[0] = balance_status[0] & 0xFF;
+	ptr->data[1] = (balance_status[0] >> 8) & 0xFF;
+	ptr->data[2] = balance_status[1] & 0xFF;
+	ptr->data[3] = (balance_status[1] >> 8) & 0xFF;
+	ptr->data[4] = balance_status[2] & 0xFF;
+	ptr->data[5] = (balance_status[2] >> 8) & 0xFF;
+	ptr->data[6] = balance_status[3] & 0xFF;
+	ptr->data[7] = (balance_status[3] >> 8) & 0xFF;
+	CAN_Send(ptr);
+	CAN_ID++;
+
+	Set_CAN_Id(ptr, CAN_ID);
+	ptr->data[0] = balance_status[4] & 0xFF;
+	ptr->data[1] = (balance_status[4] >> 8) & 0xFF;
+	ptr->data[2] = balance_status[5] & 0xFF;
+	ptr->data[3] = (balance_status[5] >> 8) & 0xFF;
+	ptr->data[4] = balance_status[6] & 0xFF;
+	ptr->data[5] = (balance_status[6] >> 8) & 0xFF;
+	ptr->data[6] = balance_status[7] & 0xFF;
+	ptr->data[7] = (balance_status[7] >> 8) & 0xFF;
+	CAN_Send(ptr);
 }
 /* USER CODE END 1 */

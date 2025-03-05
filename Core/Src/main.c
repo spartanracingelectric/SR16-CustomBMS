@@ -98,11 +98,11 @@ int main(void)
     TimerPacket cycleTimeCap;
 
     batteryModule modPackInfo;
+    modPackInfo.soc = MAX_BATTERY_CAPACITY;
 	CANMessage msg;
 	uint8_t safetyFaults = 0;
 	uint8_t safetyWarnings = 0;
 //	uint8_t moduleCounts = 0;
-	uint8_t safetyStates = 0;
 	uint32_t prev_soc_time = HAL_GetTick();
 
     modPackInfo.soc = MAX_BATTERY_CAPACITY;
@@ -139,6 +139,8 @@ int main(void)
     GpioTimePacket_Init(&tp_led_heartbeat, MCU_HEARTBEAT_LED_GPIO_Port,
                         MCU_HEARTBEAT_LED_Pin);
     TimerPacket_Init(&cycleTimeCap, CYCLETIME_CAP);
+
+
     // Pull SPI1 nCS HIGH (deselect)
     LTC_nCS_High();
 
@@ -150,11 +152,7 @@ int main(void)
 	//initializing variables
 	uint8_t tempindex = 0;
 	uint8_t indexpause = 8;
-	uint8_t high_volt_fault_lock = 0;
-	uint8_t low_volt_hysteresis = 0;
-	uint8_t low_volt_fault_lock = 0;
-	uint8_t cell_imbalance_hysteresis = 0;
-	uint8_t high_temp_hysteresis = 0;
+
 
     // reading cell voltages
     Wakeup_Sleep();
@@ -183,19 +181,18 @@ int main(void)
 	State_of_Charge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
 	prev_soc_time = HAL_GetTick();
 	//getting the summary of all cells in the pack
-	Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings, &safetyStates,
-						&high_volt_fault_lock, &low_volt_hysteresis, &low_volt_fault_lock,
-						&cell_imbalance_hysteresis);
-	Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings, &high_temp_hysteresis);
+	Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings);
+	Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings);
 
 	ReadHVInput(&modPackInfo);
 
-	CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
-						&safetyWarnings, &safetyStates);
+	CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,&safetyWarnings);
 	CAN_Send_Cell_Summary(&msg, &modPackInfo);
 	CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
 	CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
 	CAN_Send_SOC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
+	CAN_Send_Balance_Status(&msg, modPackInfo.balance_status);
+	Balance_init(modPackInfo.balance_status);
 
   /* USER CODE END 2 */
 
@@ -247,31 +244,25 @@ int main(void)
 			State_of_Charge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
 			prev_soc_time = HAL_GetTick();
 			//getting the summary of all cells in the pack
-			Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings, &safetyStates,
-								&high_volt_fault_lock, &low_volt_hysteresis, &low_volt_fault_lock,
-								&cell_imbalance_hysteresis);
-			Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings, &high_temp_hysteresis);
+			Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings);
+			Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings);
 //			Passive balancing is called unless a fault has occurred
-//			if (safetyFaults == 0 && BALANCE
-//					&& ((modPackInfo.cell_volt_highest
-//							- modPackInfo.cell_volt_lowest) > 50)) {
-//				Start_Balance((uint16_t*) modPackInfo.cell_volt,
-//				NUM_DEVICES, modPackInfo.cell_volt_lowest);
-
-//			} else if (BALANCE) {
-//				End_Balance(&safetyFaults);
-//			}
-
+			if(modPackInfo.cell_difference > BALANCE_THRESHOLD){
+				Start_Balance(modPackInfo.cell_volt, modPackInfo.cell_volt_lowest, modPackInfo.balance_status);
+			}
+			else {
+				End_Balance(modPackInfo.balance_status);
+			}
 
 //			if (TimerPacket_FixedPulse(&timerpacket_ltc)) {
 			//calling all CAN realated methods
 //			printf("CAN start\n");
-			CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
-					&safetyWarnings, &safetyStates);
+			CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults, &safetyWarnings);
 			CAN_Send_Cell_Summary(&msg, &modPackInfo);
 			CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
 			CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
 			CAN_Send_SOC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
+			CAN_Send_Balance_Status(&msg, modPackInfo.balance_status);
 //			printf("CAN end\n");
 //			}
 	}
