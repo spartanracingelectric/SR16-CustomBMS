@@ -133,8 +133,8 @@ HAL_StatusTypeDef CAN_Activate() {
 }
 
 HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
-//    while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0) {
-//    }
+    while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0) {
+    }
 
     uint8_t *dataPtr = NULL;
 
@@ -213,8 +213,8 @@ void Send_CAN_Message_Temperature(CANMessage *buffer, uint16_t *read_temp) {
     for (int i = 0; i < NUM_THERM_TOTAL; i++) {
         uint8_t temp8Bits = (uint8_t)(read_temp[i] & 0xFF);
 
-        if (thermistor8BitsPrevious[i] != temp8Bits) {
-            thermistor8BitsPrevious[i] = temp8Bits;
+//        if (thermistor8BitsPrevious[i] != temp8Bits) {
+//            thermistor8BitsPrevious[i] = temp8Bits;
             buffer->thermistorBuffer[index++] = temp8Bits;
 
             if (index >= CAN_BYTE_NUM) {
@@ -223,18 +223,18 @@ void Send_CAN_Message_Temperature(CANMessage *buffer, uint16_t *read_temp) {
                 Set_CAN_Id(buffer, CAN_ID);
                 CAN_Send(buffer);
                 CAN_ID++;
-                printf("sending CAN");
+//                printf("sending CAN");
 
                 if (messageIndex >= CAN_MESSAGE_NUM_VOLTAGE) {
                     break;
                 }
             }
-        }
+//        }
     }
 
-    while (index < CAN_BYTE_NUM) {
-        buffer[messageIndex].thermistorBuffer[index++] = 0xFF;
-    }
+//    while (index < CAN_BYTE_NUM) {
+//        buffer[messageIndex].thermistorBuffer[index++] = 0xFF;
+//    }
 }
 
 
