@@ -107,7 +107,6 @@ int main(void)
 	uint8_t safetyWarnings = 0;
 //	uint8_t moduleCounts = 0;
 	uint8_t safetyStates = 0;
-	uint32_t prev_soc_time = HAL_GetTick();
 
     modPackInfo.soc = MAX_BATTERY_CAPACITY;
 
