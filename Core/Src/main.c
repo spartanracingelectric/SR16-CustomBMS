@@ -165,7 +165,6 @@ int main(void)
 //				printf(" Cell: %d, Temp: %d\n", i, modPackInfo.cell_temp[i]);
 	}
 	if (indexpause == 8) {
-
 		LTC6811_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[0]);
 		LTC6811_SPI_requestData(2);
 		tempindex = 8;
