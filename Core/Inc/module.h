@@ -3,6 +3,8 @@
 
 #include "main.h"
 
+#include <stdint.h>
+
 #define MD_FAST 1		//27kHz
 #define MD_NORMAL 2		//7kHz
 #define MD_FILTERED 3	//26Hz

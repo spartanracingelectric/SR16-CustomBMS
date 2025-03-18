@@ -34,6 +34,9 @@
 #include "string.h"
 #include <time.h>
 #include "balance.h"
+
+#include "soc.h"
+#include <stdint.h>
 #include "hv_sense.h"
 /* USER CODE END Includes */
 
@@ -102,9 +105,7 @@ int main(void)
 	uint8_t safetyFaults = 0;
 	uint8_t safetyWarnings = 0;
 //	uint8_t moduleCounts = 0;
-	uint32_t prev_soc_time = HAL_GetTick();
-
-    modPackInfo.soc = MAX_BATTERY_CAPACITY;
+	uint8_t safetyStates = 0;
 
   /* USER CODE END 1 */
 
@@ -153,46 +154,11 @@ int main(void)
 	uint8_t indexpause = 8;
 
 
-    // reading cell voltages
-    Wakeup_Sleep();
-    Read_Volt(modPackInfo.cell_volt);
+	Wakeup_Sleep();
 
-	//reading cell temperatures
-    for (uint8_t i = tempindex; i < indexpause; i++) {
-		Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
-//				printf(" Cell: %d, Temp: %d\n", i, modPackInfo.cell_temp[i]);
-	}
-	if (indexpause == 8) {
-		LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[0]);
-		LTC_SPI_requestData(2);
-		tempindex = 8;
-		indexpause = NUM_THERM_PER_MOD;
-//				HAL_Delay(1); //this delay is for stablize mux
-	}
-	else if (indexpause == NUM_THERM_PER_MOD) {
-		LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[1]);
-		LTC_SPI_requestData(2);
-		indexpause = 8;
-		tempindex = 0;
-//				HAL_Delay(1); //this delay is for stablize mux
-	}
-
-	State_of_Charge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
-	prev_soc_time = HAL_GetTick();
-	//getting the summary of all cells in the pack
-	Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings);
-	Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings);
-
-	ReadHVInput(&modPackInfo);
-
-	CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,&safetyWarnings);
-	CAN_Send_Cell_Summary(&msg, &modPackInfo);
-	CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
-	CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
-	CAN_Send_Sensor(&msg, &modPackInfo);
-	CAN_Send_SOC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
-	CAN_Send_Balance_Status(&msg, modPackInfo.balance_status);
 	Balance_init(modPackInfo.balance_status);
+	SOC_getInitialCharge(&modPackInfo);
+	uint32_t prev_soc_time = HAL_GetTick();
 
   /* USER CODE END 2 */
 
@@ -205,6 +171,7 @@ int main(void)
 		GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS);
 		if (TimerPacket_FixedPulse(&cycleTimeCap)) {
 			 HAL_ADCEx_Calibration_Start(&hadc1);
+			 HAL_ADCEx_Calibration_Start(&hadc2);
 //		printf("hello\n");
 			//reading cell voltages
 //			printf("volt start\n");
@@ -248,7 +215,7 @@ int main(void)
 			ReadHVInput(&modPackInfo);
 //			printf("pack volt end\n");
 
-			State_of_Charge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
+			SOC_updateCharge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
 			prev_soc_time = HAL_GetTick();
 			//getting the summary of all cells in the pack
 			Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings);

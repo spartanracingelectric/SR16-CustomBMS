@@ -1,1 +1,5 @@
-/Debug/
+Debug/
+.settings/
+.ccls
+.ccls-cache/
+.DS_Store
