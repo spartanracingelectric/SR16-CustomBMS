@@ -138,25 +138,22 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
 
     uint8_t *dataPtr = NULL;
 
-       switch (ptr->TxHeader.StdId) {
-           case CAN_ID_VOLTAGE:
-               dataPtr = (uint8_t *)ptr->voltageBuffer;
-               break;
-           case CAN_ID_THERMISTOR:
-               dataPtr = (uint8_t *)ptr->thermistorBuffer;
-               break;
-           case CAN_ID_SUMMARY:
-               dataPtr = (uint8_t *)ptr->summaryBuffer;
-               break;
-           case CAN_ID_SAFETY:
-               dataPtr = (uint8_t *)ptr->safetyBuffer;
-               break;
-           case CAN_ID_SOC:
-               dataPtr = (uint8_t *)ptr->socBuffer;
-               break;
-           default:
-               return HAL_ERROR;
+       if(ptr->TxHeader.StdId > CAN_ID_VOLTAGE &&  ptr->TxHeader.StdId < CAN_ID_VOLTAGE + 24) {
+    	   dataPtr = (uint8_t *)ptr->voltageBuffer;
        }
+       if(ptr->TxHeader.StdId > CAN_ID_THERMISTOR &&  ptr->TxHeader.StdId < CAN_ID_THERMISTOR + 12) {
+    	   dataPtr = (uint8_t *)ptr->thermistorBuffer;
+       }
+       if(ptr->TxHeader.StdId == CAN_ID_SUMMARY) {
+    	   dataPtr = (uint8_t *)ptr->summaryBuffer;
+       }
+       if(ptr->TxHeader.StdId == CAN_ID_SAFETY) {
+    	   dataPtr = (uint8_t *)ptr->safetyBuffer;
+       }
+       if(ptr->TxHeader.StdId == CAN_ID_SOC) {
+    	   dataPtr = (uint8_t *)ptr->socBuffer;
+       }
+
     return HAL_CAN_AddTxMessage(&hcan1, &ptr->TxHeader, dataPtr, &ptr->TxMailbox);
 }
 
@@ -190,19 +187,20 @@ void Set_CAN_Id(CANMessage *ptr, uint32_t id) { ptr->TxHeader.StdId = id; }
 void Send_CAN_Message_Voltage(CANMessage *buffer, uint16_t *read_volt){
 	uint32_t CAN_ID = (uint32_t)CAN_ID_VOLTAGE;
 	for (int i = 0; i < NUM_CELLS; i += 4) {  //pack every 4 cell group in 1 CAN message
-		buffer->voltageBuffer[0] = read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
+		buffer->voltageBuffer[0] =  read_volt[i] & 0xFF; 			//To ensure the data type is uint8_t, use & 0xFF
 		buffer->voltageBuffer[1] = (read_volt[i] >> 8) & 0xFF;
-		buffer->voltageBuffer[2] = read_volt[i + 1] & 0xFF;
+		buffer->voltageBuffer[2] =  read_volt[i + 1] & 0xFF;
 		buffer->voltageBuffer[3] = (read_volt[i + 1] >> 8) & 0xFF;
-		buffer->voltageBuffer[4] = read_volt[i + 2] & 0xFF;
+		buffer->voltageBuffer[4] =  read_volt[i + 2] & 0xFF;
 		buffer->voltageBuffer[5] = (read_volt[i + 2] >> 8) & 0xFF;
-		buffer->voltageBuffer[6] = read_volt[i + 3] & 0xFF;
+		buffer->voltageBuffer[6] =  read_volt[i + 3] & 0xFF;
 		buffer->voltageBuffer[7] = (read_volt[i + 3] >> 8) & 0xFF;
 
 		Set_CAN_Id(buffer, CAN_ID);
 		CAN_Send(buffer);
+//		printf("CAN_ID: 0x%X\n", CAN_ID);
 		CAN_ID++;
-//		printf("CAN_ID: 0x%X", CAN_ID);
+
 	}
 }
 

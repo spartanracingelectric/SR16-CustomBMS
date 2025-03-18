@@ -112,18 +112,6 @@ void Error_Handler(void);
 #define MCU_HEARTBEAT_LED_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
-#define NUM_DEVICES				8	//1 slave board
-#define NUM_CELL_SERIES_GROUP	12	//1 slave board
-#define NUM_CELLS				NUM_DEVICES*NUM_CELL_SERIES_GROUP	//multiple slave board
-#define NUM_THERM_PER_MOD		12
-#define NUM_THERM_TOTAL			NUM_DEVICES*NUM_THERM_PER_MOD
-#define NUM_AUX_GROUP			6
-#define NUM_AUXES				NUM_DEVICES*NUM_AUX_GROUP
-#define LTC_DELAY				1000 //1s update delay
-#define LED_HEARTBEAT_DELAY_MS	50  //10ms update delay
-#define BALANCE 				0 	//FALSE
-#define MAX_CELL_CAPACITY 		3000
-#define MAX_BATTERY_CAPACITY 	NUM_DEVICES* MAX_CELL_CAPACITY
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
