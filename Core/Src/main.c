@@ -100,7 +100,6 @@ int main(void)
     TimerPacket cycleTimeCap;
 
     batteryModule modPackInfo;
-    modPackInfo.soc = MAX_BATTERY_CAPACITY;
 	CANMessage msg;
 	uint8_t safetyFaults = 0;
 	uint8_t safetyWarnings = 0;
