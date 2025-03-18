@@ -28,14 +28,13 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "6811.h"
-#include "hv.h"
 #include <stdio.h>
 #include "module.h"
 #include "safety.h"
 #include "string.h"
 #include <time.h>
 #include "balance.h"
-
+#include "hv_sense.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -190,6 +189,7 @@ int main(void)
 	CAN_Send_Cell_Summary(&msg, &modPackInfo);
 	CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
 	CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
+	CAN_Send_Sensor(&msg, &modPackInfo);
 	CAN_Send_SOC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
 	CAN_Send_Balance_Status(&msg, modPackInfo.balance_status);
 	Balance_init(modPackInfo.balance_status);
@@ -204,6 +204,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 		GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS);
 		if (TimerPacket_FixedPulse(&cycleTimeCap)) {
+			 HAL_ADCEx_Calibration_Start(&hadc1);
 //		printf("hello\n");
 			//reading cell voltages
 //			printf("volt start\n");
@@ -216,7 +217,9 @@ int main(void)
 
 			//reading cell temperatures
 			for (uint8_t i = tempindex; i < indexpause; i++) {
+//				HAL_Delay(300);
 				Read_Temp(i, modPackInfo.cell_temp, modPackInfo.read_auxreg);
+
 //				printf(" Cell: %d, Temp: %d\n", i, modPackInfo.cell_temp[i]);
 			}
 			if (indexpause == 8) {
@@ -227,13 +230,17 @@ int main(void)
 //				HAL_Delay(1); //this delay is for stablize mux
 			}
 			else if (indexpause == NUM_THERM_PER_MOD) {
+				Read_Pressure(&modPackInfo);
+				Read_Humidity(&modPackInfo);
+				Read_Atmos_Temp(&modPackInfo);
+				Get_Dew_Point(&modPackInfo);
 				LTC_SPI_writeCommunicationSetting(NUM_DEVICES, BMS_MUX_PAUSE[1]);
 				LTC_SPI_requestData(2);
 				indexpause = 8;
 				tempindex = 0;
 //				HAL_Delay(1); //this delay is for stablize mux
 			}
-//			HAL_Delay(1);
+
 //			for(int i = 0; i < NUM_THERM_TOTAL; i++){
 //				printf("Temp[%d]: %d\n",i, modPackInfo.cell_temp[i]);
 //			}
@@ -261,6 +268,7 @@ int main(void)
 			CAN_Send_Cell_Summary(&msg, &modPackInfo);
 			CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
 			CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
+			CAN_Send_Sensor(&msg, &modPackInfo);
 			CAN_Send_SOC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
 			CAN_Send_Balance_Status(&msg, modPackInfo.balance_status);
 //			printf("CAN end\n");

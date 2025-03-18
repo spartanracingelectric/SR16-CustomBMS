@@ -57,7 +57,7 @@ void LTC_SPI_writeCommunicationSetting(uint8_t total_ic, //The number of ICs bei
 
 void LTC_SPI_requestData(uint8_t len);
 
-LTC_SPI_StatusTypeDef LTC_readCellTemperatures(uint16_t *read_auxiliary);
+LTC_SPI_StatusTypeDef LTC_readGPIOs(uint16_t *read_auxiliary);
 
 void LTC_startADCVoltage(uint8_t MD, //ADC Mode
 		uint8_t DCP, //Discharge Permit

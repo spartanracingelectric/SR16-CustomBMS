@@ -26,98 +26,108 @@
 CAN_HandleTypeDef hcan1;
 
 /* CAN1 init function */
-void MX_CAN1_Init(void) {
-    /* USER CODE BEGIN CAN1_Init 0 */
+void MX_CAN1_Init(void)
+{
 
-    /* USER CODE END CAN1_Init 0 */
+  /* USER CODE BEGIN CAN1_Init 0 */
 
-    /* USER CODE BEGIN CAN1_Init 1 */
+  /* USER CODE END CAN1_Init 0 */
 
-    /* USER CODE END CAN1_Init 1 */
-    hcan1.Instance = CAN1;
-    hcan1.Init.Prescaler = 9;
-    hcan1.Init.Mode = CAN_MODE_NORMAL;
-    hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-    hcan1.Init.TimeSeg1 = CAN_BS1_3TQ;
-    hcan1.Init.TimeSeg2 = CAN_BS2_4TQ;
-    hcan1.Init.TimeTriggeredMode = DISABLE;
-    hcan1.Init.AutoBusOff = ENABLE;
-    hcan1.Init.AutoWakeUp = DISABLE;
-    hcan1.Init.AutoRetransmission = ENABLE;
-    hcan1.Init.ReceiveFifoLocked = DISABLE;
-    hcan1.Init.TransmitFifoPriority = DISABLE;
-    if (HAL_CAN_Init(&hcan1) != HAL_OK) {
-        Error_Handler();
-    }
-    /* USER CODE BEGIN CAN1_Init 2 */
+  /* USER CODE BEGIN CAN1_Init 1 */
 
-    /* USER CODE END CAN1_Init 2 */
+  /* USER CODE END CAN1_Init 1 */
+  hcan1.Instance = CAN1;
+  hcan1.Init.Prescaler = 9;
+  hcan1.Init.Mode = CAN_MODE_NORMAL;
+  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_3TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_4TQ;
+  hcan1.Init.TimeTriggeredMode = DISABLE;
+  hcan1.Init.AutoBusOff = ENABLE;
+  hcan1.Init.AutoWakeUp = DISABLE;
+  hcan1.Init.AutoRetransmission = ENABLE;
+  hcan1.Init.ReceiveFifoLocked = DISABLE;
+  hcan1.Init.TransmitFifoPriority = DISABLE;
+  if (HAL_CAN_Init(&hcan1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN CAN1_Init 2 */
+
+  /* USER CODE END CAN1_Init 2 */
+
 }
 
-void HAL_CAN_MspInit(CAN_HandleTypeDef *canHandle) {
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    if (canHandle->Instance == CAN1) {
-        /* USER CODE BEGIN CAN1_MspInit 0 */
+void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
+{
 
-        /* USER CODE END CAN1_MspInit 0 */
-        /* CAN1 clock enable */
-        __HAL_RCC_CAN1_CLK_ENABLE();
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  if(canHandle->Instance==CAN1)
+  {
+  /* USER CODE BEGIN CAN1_MspInit 0 */
 
-        __HAL_RCC_GPIOB_CLK_ENABLE();
-        /**CAN1 GPIO Configuration
-        PB8     ------> CAN1_RX
-        PB9     ------> CAN1_TX
-        */
-        GPIO_InitStruct.Pin = GPIO_PIN_8;
-        GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  /* USER CODE END CAN1_MspInit 0 */
+    /* CAN1 clock enable */
+    __HAL_RCC_CAN1_CLK_ENABLE();
 
-        GPIO_InitStruct.Pin = GPIO_PIN_9;
-        GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-        HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    /**CAN1 GPIO Configuration
+    PB8     ------> CAN1_RX
+    PB9     ------> CAN1_TX
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_8;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-        __HAL_AFIO_REMAP_CAN1_2();
+    GPIO_InitStruct.Pin = GPIO_PIN_9;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-        /* CAN1 interrupt Init */
-        HAL_NVIC_SetPriority(CAN1_TX_IRQn, 2, 0);
-        HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
-        HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 2, 0);
-        HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
-        HAL_NVIC_SetPriority(CAN1_RX1_IRQn, 2, 0);
-        HAL_NVIC_EnableIRQ(CAN1_RX1_IRQn);
-        HAL_NVIC_SetPriority(CAN1_SCE_IRQn, 2, 0);
-        HAL_NVIC_EnableIRQ(CAN1_SCE_IRQn);
-        /* USER CODE BEGIN CAN1_MspInit 1 */
+    __HAL_AFIO_REMAP_CAN1_2();
 
-        /* USER CODE END CAN1_MspInit 1 */
-    }
+    /* CAN1 interrupt Init */
+    HAL_NVIC_SetPriority(CAN1_TX_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
+    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
+    HAL_NVIC_SetPriority(CAN1_RX1_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(CAN1_RX1_IRQn);
+    HAL_NVIC_SetPriority(CAN1_SCE_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(CAN1_SCE_IRQn);
+  /* USER CODE BEGIN CAN1_MspInit 1 */
+
+  /* USER CODE END CAN1_MspInit 1 */
+  }
 }
 
-void HAL_CAN_MspDeInit(CAN_HandleTypeDef *canHandle) {
-    if (canHandle->Instance == CAN1) {
-        /* USER CODE BEGIN CAN1_MspDeInit 0 */
+void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
+{
 
-        /* USER CODE END CAN1_MspDeInit 0 */
-        /* Peripheral clock disable */
-        __HAL_RCC_CAN1_CLK_DISABLE();
+  if(canHandle->Instance==CAN1)
+  {
+  /* USER CODE BEGIN CAN1_MspDeInit 0 */
 
-        /**CAN1 GPIO Configuration
-        PB8     ------> CAN1_RX
-        PB9     ------> CAN1_TX
-        */
-        HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8 | GPIO_PIN_9);
+  /* USER CODE END CAN1_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_CAN1_CLK_DISABLE();
 
-        /* CAN1 interrupt Deinit */
-        HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
-        HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
-        HAL_NVIC_DisableIRQ(CAN1_RX1_IRQn);
-        HAL_NVIC_DisableIRQ(CAN1_SCE_IRQn);
-        /* USER CODE BEGIN CAN1_MspDeInit 1 */
+    /**CAN1 GPIO Configuration
+    PB8     ------> CAN1_RX
+    PB9     ------> CAN1_TX
+    */
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
 
-        /* USER CODE END CAN1_MspDeInit 1 */
-    }
+    /* CAN1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
+    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
+    HAL_NVIC_DisableIRQ(CAN1_RX1_IRQn);
+    HAL_NVIC_DisableIRQ(CAN1_SCE_IRQn);
+  /* USER CODE BEGIN CAN1_MspDeInit 1 */
+
+  /* USER CODE END CAN1_MspDeInit 1 */
+  }
 }
 
 /* USER CODE BEGIN 1 */
@@ -271,5 +281,25 @@ void CAN_Send_Balance_Status(struct CANMessage *ptr, uint16_t *balance_status){
 	ptr->data[6] = balance_status[7] & 0xFF;
 	ptr->data[7] = (balance_status[7] >> 8) & 0xFF;
 	CAN_Send(ptr);
+}
+
+void CAN_Send_Sensor(struct CANMessage *ptr, batteryModule *batt) {
+    uint16_t CAN_ID = 0x602;
+	Set_CAN_Id(ptr, CAN_ID);
+
+	for (int i = 0; i < NUM_DEVICES; ++i) {
+		ptr->data[0] = batt->pressure[i];
+		ptr->data[1] = batt->pressure[i] >> 8;
+		ptr->data[2] = batt->atmos_temp[i];
+		ptr->data[3] = batt->atmos_temp[i] >> 8;
+		ptr->data[4] = batt->humidity[i];
+		ptr->data[5] = batt->humidity[i] >> 8;
+		ptr->data[6] = batt->dew_point[i];
+		ptr->data[7] = batt->dew_point[i] >> 8;
+		CAN_Send(ptr);
+
+		CAN_ID++;
+		Set_CAN_Id(ptr, CAN_ID);
+	}
 }
 /* USER CODE END 1 */

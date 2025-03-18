@@ -58,6 +58,9 @@ typedef struct batteryModule {
 	uint16_t average_volt[NUM_DEVICES];
 	uint16_t average_temp[NUM_DEVICES];
 	uint16_t standerd_diviation;
+	uint8_t pressure[NUM_DEVICES];
+	uint16_t humidity[NUM_DEVICES];
+	uint16_t atmos_temp[NUM_DEVICES];
 	uint16_t cell_volt_lowest;
 	uint16_t cell_volt_highest;
 	uint16_t cell_difference;
@@ -68,7 +71,8 @@ typedef struct batteryModule {
 	uint16_t soc;
 	uint32_t current;
 	uint16_t balance_status[NUM_DEVICES];
-} batteryModule;
+    uint16_t dew_point[NUM_DEVICES];
+}batteryModule;
 
 typedef struct CANMessage {
 	CAN_TxHeaderTypeDef TxHeader;

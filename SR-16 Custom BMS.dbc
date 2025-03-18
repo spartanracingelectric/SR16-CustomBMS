@@ -7,6 +7,7 @@ BU_:
 
 
 BO_ 1536 BMS_Safety_Checker: 8 Vector__XXX
+<<<<<<< HEAD
  SG_ BMS_Pack_Voltage : 32|16@1+ (0.1,0) [0|6553.5] "" Vector__XXX
  SG_ BMS_Balancing_State : 16|16@1+ (0.0001,0) [0|5] "V" Vector__XXX
  SG_ BMS_Pack_High_Volt_Warning : 15|1@1- (1,0) [0|1] "" Vector__XXX
@@ -27,6 +28,29 @@ BO_ 1570 BMS_Cell_Summary: 8 Vector__XXX
  SG_ BMS_Higest_Cell_Temperature : 32|16@1+ (1,0) [0|100] "C" Vector__XXX
  SG_ BMS_Lowest_Cell_Voltage : 16|16@1+ (0.0001,0) [0|5] "V" Vector__XXX
  SG_ BMS_Highest_Cell_Voltage : 0|16@1+ (0.0001,0) [0|5] "V" Vector__XXX
+=======
+ SG_ BMS_Cell_High_Temp_Fault : 2|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Cell_Volt_Imbalance_Fault : 3|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Cell_Low_Volt_Fault : 4|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Cell_High_Volt_Fault : 5|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Pack_Low_Volt_Fault : 6|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Pack_High_Volt_Fault : 7|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Cell_High_Temp_Warning : 10|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Cell_Volt_Imbalance_Warning : 11|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Cell_Low_Volt_Warning : 12|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Cell_High_Volt_Warning : 13|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Pack_Low_Volt_Warning : 14|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Pack_High_Volt_Warning : 15|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Balancing_State : 23|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ BMS_Pack_Voltage : 24|32@1+ (1,0) [0|4.29497e+009] "" Vector__XXX
+ SG_ BMS_SPIError : 56|8@1+ (1,0) [0|255] "" Vector__XXX
+
+BO_ 1570 BMS_Cell_Summary: 8 Vector__XXX
+ SG_ BMS_Highest_Cell_Voltage : 0|16@1+ (0.0001,0) [0|5] "V" Vector__XXX
+ SG_ BMS_Lowest_Cell_Voltage : 16|16@1+ (0.0001,0) [0|5] "V" Vector__XXX
+ SG_ BMS_Higest_Cell_Temperature : 32|16@1+ (1,0) [0|100] "C" Vector__XXX
+ SG_ BMS_Lowest_Cell_Temperature : 48|16@1+ (1,0) [0|100] "C" Vector__XXX
+>>>>>>> main
 
 BO_ 1584 BMS_M1_Cell_Voltage_Data_1: 8 Vector__XXX
  SG_ BMS_M1_Cell_4_Voltage : 48|16@1+ (0.0001,0) [0|5] "V" Vector__XXX
@@ -424,3 +448,62 @@ BO_ 1572 BMS_Balance_Status_2: 8 Vector__XXX
 
 
 
+<<<<<<< HEAD
+=======
+BO_ 1569 BMS_State_of_Charge: 8 Vector__XXX
+ SG_ BMS_Current : 24|32@1+ (1,0) [0|4.29497e+009] "mA" Vector__XXX
+ SG_ BMS_Percent : 16|8@1+ (1,0) [0|255] "Percent" Vector__XXX
+ SG_ BMS_Capacity : 0|16@1+ (1,0) [0|65535] "mAh" Vector__XXX
+
+BO_ 1538 BMS_M1_Sensor: 8 Vector__XXX
+ SG_ BMS_M1_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M1_Pressure : 0|16@1+ (0.01,0) [0|655.35] "PSI" Vector__XXX
+ SG_ BMS_M1_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M1_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+BO_ 1539 BMS_M2_Sensor: 8 Vector__XXX
+ SG_ BMS_M2_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M2_Pressure : 0|16@1+ (0.0001,0) [0|6.5535] "PSI" Vector__XXX
+ SG_ BMS_M2_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M2_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+BO_ 1540 BMS_M3_Sensor: 8 Vector__XXX
+ SG_ BMS_M3_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M3_Pressure : 0|16@1+ (0.0001,0) [0|6.5535] "PSI" Vector__XXX
+ SG_ BMS_M3_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M3_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+BO_ 1541 BMS_M4_Sensor: 8 Vector__XXX
+ SG_ BMS_M4_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M4_Pressure : 0|16@1+ (0.0001,0) [0|6.5535] "relativePSI" Vector__XXX
+ SG_ BMS_M4_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M4_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+BO_ 1542 BMS_M5_Sensor: 8 Vector__XXX
+ SG_ BMS_M5_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M5_Pressure : 0|16@1+ (0.0001,0) [0|6.5535] "PSI" Vector__XXX
+ SG_ BMS_M5_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M5_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+BO_ 1543 BMS_M6_Sensor: 8 Vector__XXX
+ SG_ BMS_M6_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M6_Pressure : 0|16@1+ (0.0001,0) [0|6.5535] "PSI" Vector__XXX
+ SG_ BMS_M6_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M6_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+BO_ 1544 BMS_M7_Sensor: 8 Vector__XXX
+ SG_ BMS_M7_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M7_Pressure : 0|16@1+ (0.0001,0) [0|6.5535] "PSI" Vector__XXX
+ SG_ BMS_M7_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M7_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+BO_ 1545 BMS_M8_Sensor: 8 Vector__XXX
+ SG_ BMS_M8_Dew_Point : 48|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M8_Pressure : 0|16@1+ (0.01,0) [0|655.35] "PSI" Vector__XXX
+ SG_ BMS_M8_Atmosphere_Temp : 16|16@1+ (1,0) [0|65535] "C" Vector__XXX
+ SG_ BMS_M8_Humidity : 32|16@1+ (1,0) [0|65535] "%" Vector__XXX
+
+
+
+
+>>>>>>> main
