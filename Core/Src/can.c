@@ -233,10 +233,10 @@ void Send_CAN_Message_Cell_Summary(CANMessage *buffer, batteryModule *batt){
 	buffer->summaryBuffer[1] = (batt->cell_volt_highest >> 8) & 0xFF;
 	buffer->summaryBuffer[2] = batt->cell_volt_lowest & 0xFF;
 	buffer->summaryBuffer[3] = (batt->cell_volt_lowest >> 8) & 0xFF;
-	buffer->summaryBuffer[4] = batt->cell_temp_highest;
-	buffer->summaryBuffer[5] = (batt->cell_temp_highest >> 8) & 0xFF;
-	buffer->summaryBuffer[6] = batt->cell_temp_lowest & 0xFF;
-	buffer->summaryBuffer[7] = (batt->cell_temp_lowest >> 8) & 0xFF;
+	buffer->summaryBuffer[4] = (uint8_t)batt->cell_temp_highest & 0xFF;
+	buffer->summaryBuffer[5] = (uint8_t)batt->cell_temp_lowest & 0xFF;
+//	buffer->summaryBuffer[6] =
+//	buffer->summaryBuffer[7] =
 	Set_CAN_Id(buffer, CAN_ID);
 	CAN_Send(buffer);
 }
