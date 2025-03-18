@@ -86,7 +86,7 @@ void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *war
 			*warnings |= WARNING_BIT_LOW_VOLT;
 		}
 		//low cell volt fault
-		if(batt->cell_volt_lowest <= CELL_LOW_VOLT_FAULT && * low_volt_hysteresis > 3){
+		if(batt->cell_volt_lowest <= CELL_LOW_VOLT_FAULT && *low_volt_hysteresis > 3){
 			*fault |= FAULT_BIT_LOW_VOLT;
 			HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_SET);
 		}
