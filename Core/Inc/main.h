@@ -46,7 +46,7 @@ extern "C" {
 #define NUM_AUX_GROUP			6
 #define NUM_AUXES				NUM_DEVICES*NUM_AUX_GROUP
 #define CYCLETIME_CAP			100 //100ms update delay
-#define LED_HEARTBEAT_DELAY_MS	10  //10ms update delay
+#define LED_HEARTBEAT_DELAY_MS	50  //10ms update delay
 #define BALANCE 				0 	//FALSE
 #define MAX_CELL_CAPACITY 		3000
 #define MAX_BATTERY_CAPACITY 	NUM_DEVICES* MAX_CELL_CAPACITY
@@ -75,19 +75,21 @@ typedef struct batteryModule {
 	uint16_t atmos_temp[NUM_DEVICES];
 	uint16_t cell_volt_lowest;
 	uint16_t cell_volt_highest;
+	uint16_t cell_difference;
 	uint16_t cell_temp_lowest;
 	uint16_t cell_temp_highest;
 	uint32_t pack_voltage;
 	uint16_t read_auxreg[NUM_AUXES];
+	uint16_t balance_status[NUM_DEVICES];
     uint16_t soc;
     uint32_t current;
     uint16_t dew_point[NUM_DEVICES];
-}batteryModule;
+} batteryModule;
 
-typedef struct CANMessage{
-    CAN_TxHeaderTypeDef TxHeader;
-    uint32_t TxMailbox;
-    uint8_t data[8];
+typedef struct CANMessage {
+	CAN_TxHeaderTypeDef TxHeader;
+	uint32_t TxMailbox;
+	uint8_t data[8];
 } CANMessage;
 
 /* USER CODE END ET */

@@ -157,6 +157,8 @@ int main(void)
 
 	Wakeup_Sleep();
 
+    Balance_init(modPackInfo.balance_status);
+
 	SOC_getInitialCharge(&modPackInfo);
 	uint32_t prev_soc_time = HAL_GetTick();
 
@@ -218,10 +220,8 @@ int main(void)
 			SOC_updateCharge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
 			prev_soc_time = HAL_GetTick();
 			//getting the summary of all cells in the pack
-			Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings, &safetyStates,
-								&high_volt_fault_lock, &low_volt_hysteresis, &low_volt_fault_lock,
-								&cell_imbalance_hysteresis);
-			Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings, &high_temp_hysteresis);
+            Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings);
+			Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings);
 //			Passive balancing is called unless a fault has occurred
 //			if (safetyFaults == 0 && BALANCE
 //					&& ((modPackInfo.cell_volt_highest
@@ -232,18 +232,23 @@ int main(void)
 //			} else if (BALANCE) {
 //				End_Balance(&safetyFaults);
 //			}
+            if(modPackInfo.cell_difference > BALANCE_THRESHOLD){
+				Start_Balance(modPackInfo.cell_volt, modPackInfo.cell_volt_lowest, modPackInfo.balance_status);
+			}
+
+			End_Balance(modPackInfo.balance_status);//end the balance if CAN RX recieve 0
 
 
 //			if (TimerPacket_FixedPulse(&timerpacket_ltc)) {
 			//calling all CAN realated methods
 //			printf("CAN start\n");
-			CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults,
-					&safetyWarnings, &safetyStates);
+            CAN_Send_Safety_Checker(&msg, &modPackInfo, &safetyFaults, &safetyWarnings);
 			CAN_Send_Cell_Summary(&msg, &modPackInfo);
 			CAN_Send_Voltage(&msg, modPackInfo.cell_volt);
 			CAN_Send_Temperature(&msg, modPackInfo.cell_temp);
 			CAN_Send_Sensor(&msg, &modPackInfo);
 			CAN_Send_SOC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
+            CAN_Send_Balance_Status(&msg, modPackInfo.balance_status);
 		}
     }
   /* USER CODE END 3 */

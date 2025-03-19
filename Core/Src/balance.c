@@ -1,6 +1,8 @@
 #include "balance.h"
 #include "6811.h"
 #include "can.h"
+#include <stdio.h>
+#include "usart.h"
 
 //DEFAULT VALUES THAT ARE SET IN CONFIG REGISTERS
 //static int GPIO[5] = { 1, 1, 1, 1, 1 };
@@ -11,51 +13,63 @@
 //static uint8_t VOV_and_VUV = 0x00;
 //static uint8_t VOV = 0x00;
 //static int DCTO[4] = { 1, 1, 1, 1 };
-static uint8_t config[8][6] =
-		{ { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00,
-				0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8,
-				0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00,
-				0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00,
-				0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 } };
+CAN_RxHeaderTypeDef rxHeader;
+uint8_t rxData[8];
+uint8_t balance = 0;			//FALSE
 
-static uint8_t defaultConfig[8][6] = { { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, {
-		0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00,
-		0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00,
-		0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8,
-		0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 } };
+static uint8_t config[8][6] = { { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 },
+								{ 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 },
+								{ 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 },
+								{ 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 } };
 
-//void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
-//    CAN_RxHeaderTypeDef rxHeader;
-//    uint8_t rxData[8];
-//
-//    // メッセージを受信
-//    if (HAL_CAN_GetRxMessage(hcan1, CAN_RX_FIFO0, &rxHeader, rxData) == HAL_OK) {
-//        // メッセージIDでフィルタリング
-//        if (rxHeader.StdId == 0x100) {  // CAN message from charger
-//            uint8_t balanceCommand = rxData[0]; // see the data bit on CAN
-//
-//            // change the BALANCE flag to enable balance
-//            if (balanceCommand == 0x01) {
-//                BALANCE = 1;  // enable balance
-//                printf("BALANCE enabled by CAN message.\n");
-//            } else if (balanceCommand == 0x00) {
-//                BALANCE = 0;  // disable balance
-//                printf("BALANCE disabled by CAN message.\n");
-//            }
-//        }
-//    }
-//}
+static uint8_t defaultConfig[8][6] = {{ 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 },
+									  { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 },
+									  { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 },
+									  { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 }, { 0xF8, 0x00, 0x00, 0x00, 0x00, 0x20 } };
 
-void Start_Balance(uint16_t *read_volt, uint8_t length, uint16_t lowest) {
-	Discharge_Algo(read_volt, NUM_DEVICES, lowest);
-	Wakeup_Sleep();
-	LTC_writeCFG(NUM_DEVICES, config);
+void Balance_init(uint16_t *balanceStatus){
+	memset(balanceStatus, 0, 8 * sizeof(uint16_t));
 }
 
-void End_Balance(uint8_t *faults) {
-	Wakeup_Sleep();
-	LTC_writeCFG(NUM_DEVICES, defaultConfig);
-	*faults |= 0b00000010;
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
+    printf("fifo 0 callback\n");
+    if (HAL_CAN_GetRxMessage(hcan1, CAN_RX_FIFO0, &rxHeader, rxData) == HAL_OK) {
+        if (rxHeader.StdId == 0x604) {  // CAN message from charger
+            uint8_t balanceCommand = rxData[0]; // see the data bit on CAN
+
+            // change the BALANCE flag to enable balance
+            if (balanceCommand == 1) {
+            	balance = 1;  // enable balance
+//                printf("BALANCE enabled by CAN message.\n");
+            } else if (balanceCommand == 0) {
+            	balance = 0;  // disable balance
+//                printf("BALANCE disabled by CAN message.\n");
+            }
+        }
+    }
+}
+
+void Start_Balance(uint16_t *read_volt, uint16_t lowest, uint16_t *balanceStatus) {
+//	printf("balance enable is %d\n", balance);
+	if(balance > 0){
+		Discharge_Algo(read_volt, lowest , balanceStatus);
+		Wakeup_Sleep();
+		LTC_writeCFG(NUM_DEVICES, config);
+	}
+	else{
+		return;
+	}
+}
+
+void End_Balance(uint16_t *balanceStatus) {
+	if(balance == 0){
+		Balance_reset(balanceStatus);
+		Wakeup_Sleep();
+		LTC_writeCFG(NUM_DEVICES, defaultConfig);
+	}
+	else{
+		return;
+	}
 }
 
 /**
@@ -65,20 +79,29 @@ void End_Balance(uint8_t *faults) {
  * @param length count of readings. 
  * @param lowest read_volt's lowest cell reading
  */
-void Discharge_Algo(uint16_t *read_volt, uint8_t total_ic, uint16_t lowest) {
-
+void Discharge_Algo(uint16_t *read_volt, uint16_t lowest, uint16_t *balanceStatus) {
 	for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
 		// check if each cell is close within 0.005V of the lowest cell.
 		uint8_t DCC[12];
-		for (uint8_t cell_idx = 0; cell_idx < NUM_CELL_SERIES_GROUP;
-				cell_idx++) {
-			if (read_volt[dev_idx * NUM_CELL_SERIES_GROUP + cell_idx] - lowest
-					> 50) {
+		for (uint8_t cell_idx = 0; cell_idx < NUM_CELL_SERIES_GROUP; cell_idx++) {
+			if (read_volt[dev_idx * NUM_CELL_SERIES_GROUP + cell_idx] - lowest > BALANCE_THRESHOLD) {
 				DCC[cell_idx] = 1;
+				balanceStatus[dev_idx] |= (1 << cell_idx);
 			} else {
 				DCC[cell_idx] = 0;
+				balanceStatus[dev_idx] &= ~(1 << cell_idx); //set the bit to 0
 			}
 		}
+		Set_Cfg(dev_idx, (uint8_t*) DCC);
+	}
+}
+
+void Balance_reset(uint16_t *balanceStatus) {
+	uint8_t DCC[12] = {0};  //reset all DCC to 0
+	for (uint8_t dev_idx = 0; dev_idx < NUM_DEVICES; dev_idx++) {
+		balanceStatus[dev_idx] = 0;
+		printf("balanceStaus[%d]: %d\n", dev_idx, balanceStatus[dev_idx]);
+
 		Set_Cfg(dev_idx, (uint8_t*) DCC);
 	}
 }
