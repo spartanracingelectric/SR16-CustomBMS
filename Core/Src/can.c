@@ -138,10 +138,10 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
 
     uint8_t *dataPtr = NULL;
 
-       if(ptr->TxHeader.StdId > CAN_ID_VOLTAGE &&  ptr->TxHeader.StdId < CAN_ID_VOLTAGE + 24) {
+       if(ptr->TxHeader.StdId >= CAN_ID_VOLTAGE &&  ptr->TxHeader.StdId < CAN_ID_VOLTAGE + (NUM_CELLS * 2 / CAN_BYTE_NUM)) {//(NUM_CELLS * 2 / CAN_BYTE_NUM is just a number of can message
     	   dataPtr = (uint8_t *)ptr->voltageBuffer;
        }
-       if(ptr->TxHeader.StdId > CAN_ID_THERMISTOR &&  ptr->TxHeader.StdId < CAN_ID_THERMISTOR + 12) {
+       if(ptr->TxHeader.StdId >= CAN_ID_THERMISTOR &&  ptr->TxHeader.StdId < CAN_ID_THERMISTOR + (NUM_THERM_TOTAL / CAN_BYTE_NUM + 3)) {//(NUM_THERM_TOTAL / CAN_BYTE_NUM + 3) is a number of the message, 3 is number of sensors
     	   dataPtr = (uint8_t *)ptr->thermistorBuffer;
        }
        if(ptr->TxHeader.StdId == CAN_ID_SUMMARY) {
@@ -174,12 +174,6 @@ void CAN_SettingsInit(CANMessage *buffers) {
     buffers->TxHeader.StdId = 0x00;
     buffers->TxHeader.RTR = CAN_RTR_DATA;
     buffers->TxHeader.DLC = 8;
-    for (int i = 0; i < 12; i++) {
-          for (int j = 0; j < 8; j++) {
-              buffers[i].thermistorBuffer[j] = 0xFF;
-              buffers[i].voltageBuffer[j] = 0xFF;
-          }
-      }
 }
 
 void Set_CAN_Id(CANMessage *ptr, uint32_t id) { ptr->TxHeader.StdId = id; }
@@ -207,8 +201,10 @@ void Send_CAN_Message_Voltage(CANMessage *buffer, uint16_t *read_volt){
 void Send_CAN_Message_Temperature(CANMessage *buffer, uint16_t *read_temp) {
     uint32_t CAN_ID = (uint32_t)CAN_ID_THERMISTOR;
 
-    for (int i = 0; i < NUM_THERM_TOTAL; i += 8) {
-		buffer->thermistorBuffer[0] = (uint8_t)(read_temp[i] & 0xFF);
+    for (int i = 0; i < NUM_THERM_TOTAL + 24; i += 16) {
+        Set_CAN_Id(buffer, CAN_ID);
+
+		buffer->thermistorBuffer[0] = (uint8_t)(read_temp[  i  ] & 0xFF);
 		buffer->thermistorBuffer[1] = (uint8_t)(read_temp[i + 1] & 0xFF);
 		buffer->thermistorBuffer[2] = (uint8_t)(read_temp[i + 2] & 0xFF);
 		buffer->thermistorBuffer[3] = (uint8_t)(read_temp[i + 3] & 0xFF);
@@ -217,11 +213,44 @@ void Send_CAN_Message_Temperature(CANMessage *buffer, uint16_t *read_temp) {
 		buffer->thermistorBuffer[6] = (uint8_t)(read_temp[i + 6] & 0xFF);
 		buffer->thermistorBuffer[7] = (uint8_t)(read_temp[i + 7] & 0xFF);
 
+		printf("temp1 in 8 bits:%d\n", buffer->thermistorBuffer[0]);
+		printf("temp2 in 8 bits:%d\n", buffer->thermistorBuffer[1]);
+		printf("temp3 in 8 bits:%d\n", buffer->thermistorBuffer[2]);
+		printf("temp4 in 8 bits:%d\n", buffer->thermistorBuffer[3]);
+		printf("temp5 in 8 bits:%d\n", buffer->thermistorBuffer[4]);
+		printf("temp6 in 8 bits:%d\n", buffer->thermistorBuffer[5]);
+		printf("temp7 in 8 bits:%d\n", buffer->thermistorBuffer[6]);
+		printf("temp8 in 8 bits:%d\n", buffer->thermistorBuffer[7]);
+
+		CAN_Send(buffer);
+		CAN_ID++;
+
 		Set_CAN_Id(buffer, CAN_ID);
+
+		buffer->thermistorBuffer[0] = (uint8_t)(read_temp[i + 8] & 0xFF);
+		buffer->thermistorBuffer[1] = (uint8_t)(read_temp[i + 9] & 0xFF);
+		buffer->thermistorBuffer[2] = (uint8_t)(read_temp[i + 10] & 0xFF);
+		buffer->thermistorBuffer[3] = (uint8_t)(read_temp[i + 11] & 0xFF);
+		buffer->thermistorBuffer[4] =  0xFF;
+		buffer->thermistorBuffer[5] =  0xFF;
+		buffer->thermistorBuffer[6] =  0xFF;
+		buffer->thermistorBuffer[7] =  0xFF;
+
+		printf("temp9 in 8 bits:%d\n", buffer->thermistorBuffer[0]);
+		printf("temp10 in 8 bits:%d\n", buffer->thermistorBuffer[1]);
+		printf("temp11 in 8 bits:%d\n", buffer->thermistorBuffer[2]);
+		printf("temp12 in 8 bits:%d\n", buffer->thermistorBuffer[3]);
+
 		CAN_Send(buffer);
 		CAN_ID++;
 //      printf("sending CAN");
 		}
+//	for(int i = 0; i < 96; i ++){
+//		uint8_t eightbit = (uint8_t)(read_temp[i]);
+//		uint16_t sixteenbit = read_temp[i];
+//		printf("temp[%d] in 8 bits:%d\n", i, eightbit);
+//		printf("temp[%d] in 16 bits:%d\n", i, sixteenbit);
+//	}
 }
 
 
