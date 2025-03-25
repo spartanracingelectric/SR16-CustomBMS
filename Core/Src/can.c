@@ -275,8 +275,8 @@ void Send_CAN_Message_Safety_Checker(CANMessage *buffer, batteryModule *batt, ui
 	buffer->safetyBuffer[2] = *states;
 	buffer->safetyBuffer[3] = batt->pack_voltage & 0xFF;
 	buffer->safetyBuffer[4] = (batt->pack_voltage >> 8) & 0xFF;
-	buffer->safetyBuffer[5] = (batt->pack_voltage >> 16) & 0xFF;
-	buffer->safetyBuffer[6] = (batt->pack_voltage >> 24) & 0xFF;
+//	buffer->safetyBuffer[5] = (batt->pack_voltage >> 16) & 0xFF;
+//	buffer->safetyBuffer[6] = (batt->pack_voltage >> 24) & 0xFF;
 	Set_CAN_Id(buffer, CAN_ID);
 	CAN_Send(buffer);
 }

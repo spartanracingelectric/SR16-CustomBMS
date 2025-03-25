@@ -16,7 +16,7 @@
 		float amcOutput = adcVoltage / GAIN_TLV9001;
 		float hvInput = amcOutput * DIVIDER_RATIO;
 
-		batt->pack_voltage = hvInput;
+		batt->pack_voltage = (uint16_t)((hvInput / 410.0f) * 65535.0f);
 	}
 
 	void State_of_Charge(batteryModule *batt, uint32_t elapsed_time) {
