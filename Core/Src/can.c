@@ -26,6 +26,7 @@
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan1;
+uint8_t can_skip_flag = 0;
 
 /* CAN1 init function */
 void MX_CAN1_Init(void)
@@ -121,7 +122,7 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
   if(canHandle->Instance==CAN1)
   {
   /* USER CODE BEGIN CAN1_MspDeInit 0 */
-
+	  can_skip_flag = 0;
   /* USER CODE END CAN1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_CAN1_CLK_DISABLE();
@@ -153,9 +154,17 @@ HAL_StatusTypeDef CAN_Activate() {
 }
 
 HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
-//    while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0) {
-//    }
-	HAL_Delay(1);
+    uint32_t can_erraps_time = HAL_GetTick();
+    while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0) {
+    	if(can_skip_flag == 1){
+    		return HAL_TIMEOUT;
+    	}
+    	else if(HAL_GetTick() - can_erraps_time > 10){
+    		can_skip_flag = 1;
+    		return HAL_TIMEOUT;
+    	}
+    }
+//	HAL_Delay(1);
     uint8_t *dataPtr = NULL;
 
 	 if(ptr->TxHeader.StdId >= CAN_ID_VOLTAGE &&  ptr->TxHeader.StdId < CAN_ID_VOLTAGE + (NUM_CELLS * 2 / CAN_BYTE_NUM)) {//(NUM_CELLS * 2 / CAN_BYTE_NUM is just a number of can message
@@ -178,19 +187,7 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
 	}
 
 	return HAL_CAN_AddTxMessage(&hcan1, &ptr->TxHeader, dataPtr, &ptr->TxMailbox);
-
-
 }
-
-// void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan) {
-//	CAN_TX_HALT = 0;
-// }
-// void HAL_CAN_TxMailbox1CompleteCallback(CAN_HandleTypeDef *hcan) {
-//	CAN_TX_HALT = 0;
-// }
-// void HAL_CAN_TxMailbox2CompleteCallback(CAN_HandleTypeDef *hcan) {
-//	CAN_TX_HALT = 0;
-// }
 
 void CAN_SettingsInit(CANMessage *ptr) {
     CAN_Start();
