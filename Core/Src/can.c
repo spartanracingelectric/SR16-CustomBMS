@@ -157,14 +157,12 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
     uint32_t can_erraps_time = HAL_GetTick();
     while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) == 0) {
     	if(can_skip_flag == 1){
-
     		return HAL_TIMEOUT;
     	}
     	else if(HAL_GetTick() - can_erraps_time > 10){
     		can_skip_flag = 1;
     		return HAL_TIMEOUT;
     	}
-
     }
     uint8_t *dataPtr = NULL;
 
@@ -186,7 +184,6 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
 	 else if (ptr->TxHeader.StdId == CAN_ID_BALANCE_STATUS || ptr->TxHeader.StdId == CAN_ID_BALANCE_STATUS + 1) {
 		dataPtr = (uint8_t *)ptr->balanceStatus;
 	}
-
 	return HAL_CAN_AddTxMessage(&hcan1, &ptr->TxHeader, dataPtr, &ptr->TxMailbox);
 }
 

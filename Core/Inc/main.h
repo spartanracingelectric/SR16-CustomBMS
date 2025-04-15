@@ -45,8 +45,9 @@ extern "C" {
 #define NUM_THERM_TOTAL			NUM_DEVICES*NUM_THERM_PER_MOD
 #define NUM_AUX_GROUP			6
 #define NUM_AUXES				NUM_DEVICES*NUM_AUX_GROUP
-#define CYCLETIME_CAP			60 //100ms update delay
-#define LED_HEARTBEAT_DELAY_MS	50  //10ms update delay
+#define CYCLETIME_CAP			60  //60ms update delay
+#define CAN_RECONNECTION_CHECK	500 //check can connection every 500ms
+#define LED_HEARTBEAT_DELAY_MS	50  //50ms update delay
 #define BALANCE 				0 	//FALSE
 #define MAX_CELL_CAPACITY 		3000
 #define MAX_BATTERY_CAPACITY 	NUM_DEVICES* MAX_CELL_CAPACITY

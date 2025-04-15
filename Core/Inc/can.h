@@ -45,6 +45,8 @@ extern CAN_HandleTypeDef hcan1;
 #define CAN_BYTE_NUM				8
 #define CAN_MESSAGE_NUM_VOLTAGE 	NUM_CELLS * 2 / CAN_BYTE_NUM
 #define CAN_MESSAGE_NUM_THERMISTOR 	NUM_THERM_TOTAL / CAN_BYTE_NUM
+
+extern uint8_t can_skip_flag;
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);
