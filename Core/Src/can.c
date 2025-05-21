@@ -26,6 +26,10 @@
 
 CAN_HandleTypeDef hcan1;
 uint8_t can_skip_flag = 0;
+CAN_RxHeaderTypeDef rxHeader;
+uint8_t rxData[8];
+uint8_t balance = 0;			//FALSE
+uint8_t balance_finish = 0;
 /* CAN1 init function */
 void MX_CAN1_Init(void)
 {
@@ -142,13 +146,31 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
 // uint8_t CAN_TX_HALT = 1; //halt frag to send it to mailbox
 
 HAL_StatusTypeDef CAN_Start() { return HAL_CAN_Start(&hcan1); }
 
 HAL_StatusTypeDef CAN_Activate() {
     return HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+}
+
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
+//    printf("fifo 0 callback\n");
+    if (HAL_CAN_GetRxMessage(hcan1, CAN_RX_FIFO0, &rxHeader, rxData) == HAL_OK) {
+        if (rxHeader.StdId == 0x604) {  // CAN message from charger
+            uint8_t balanceCommand = rxData[0]; // see the data bit on CAN
+
+            // change the BALANCE flag to enable balance
+            if (balanceCommand == 1) {
+            	balance = 1;  // enable balance
+//                printf("BALANCE enabled by CAN message.\n");
+            } else if (balanceCommand == 0) {
+            	balance = 0;  // disable balance
+            	balance_finish = 1;
+//                printf("BALANCE disabled by CAN message.\n");
+            }
+        }
+    }
 }
 
 HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {

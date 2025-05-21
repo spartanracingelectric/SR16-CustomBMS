@@ -29,8 +29,8 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
-
+extern uint8_t balance;			//FALSE
+extern uint8_t balance_finish;
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;
