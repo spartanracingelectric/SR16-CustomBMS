@@ -182,6 +182,9 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
 	 else if (ptr->TxHeader.StdId == CAN_ID_BALANCE_STATUS || ptr->TxHeader.StdId == CAN_ID_BALANCE_STATUS + 1) {
 		dataPtr = (uint8_t *)ptr->balanceStatus;
 	}
+	 else if (ptr->TxHeader.StdId == CAN_ID_PRECHARGE) {
+		dataPtr = (uint8_t *)ptr->prechargeBuffer;
+	}
 	return HAL_CAN_AddTxMessage(&hcan1, &ptr->TxHeader, dataPtr, &ptr->TxMailbox);
 }
 
@@ -347,6 +350,21 @@ void CAN_Send_Balance_Status(CANMessage *buffer, uint16_t *balance_status){
 	buffer->balanceStatus[7] = (balance_status[7] >> 8) & 0xFF;
 //	printf("can id for balance2: %d\n", CAN_ID);
 	CAN_Send(buffer);
+}
+
+void CAN_Send_Precharge_Status(CANMessage *buffer, batteryModule *batt) {
+	uint32_t CAN_ID = (uint32_t)CAN_ID_PRECHARGE;
+	Set_CAN_Id(buffer, CAN_ID);
+	buffer->TxHeader.DLC = 1;
+
+	if(batt->precharge_status) {
+		buffer->prechargeBuffer[0] = 0x01;
+	} else {
+		buffer->prechargeBuffer[0] = 0x00;
+	}
+
+	CAN_Send(buffer);
+	buffer->TxHeader.DLC = 8;
 }
 
 //void CAN_Send_Sensor(struct CANMessage *ptr, batteryModule *batt) {

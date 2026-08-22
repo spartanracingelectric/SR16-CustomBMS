@@ -24,6 +24,18 @@
 			batt->hvsens_pack_voltage = 0;
 		}
 
+		uint32_t tractiveADC = readADCChannel(ADC_CHANNEL_14);
+		float tractiveADCVolt = ((float)tractiveADC / ADC_RESOLUTION) * vRef;
+		float tractiveAMCOut = tractiveADCVolt / GAIN_TLV9001;
+		batt->tractive_voltage = (tractiveAMCOut) * (DIVIDER_RATIO);
+
+		if (batt->tractive_voltage >= 400.0f) {
+			batt->precharge_status = 1;
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
+		} else {
+			batt->precharge_status = 0;
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
+		}
 	}
 
 	void getSumPackVoltage(batteryModule *batt){

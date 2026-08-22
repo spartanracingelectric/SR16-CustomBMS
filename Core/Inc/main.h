@@ -73,6 +73,8 @@ typedef struct batteryModule {
     uint32_t soc; // microamps!!!!!
     uint32_t current;
     uint16_t dew_point[NUM_DEVICES];
+	float tractive_voltage;
+	uint8_t precharge_status;
 } batteryModule;
 
 typedef struct CANMessage{
@@ -84,6 +86,7 @@ typedef struct CANMessage{
     uint8_t safetyBuffer[8];
     uint8_t socBuffer[8];
     uint8_t balanceStatus[8];
+	uint8_t prechargeBuffer[8];
 } CANMessage;
 
 /* USER CODE END ET */
