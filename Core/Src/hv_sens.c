@@ -37,7 +37,7 @@
 
 		//the VCU asks for precharge over CAN, the BMS closes the precharge relay, then
 		//hands over to the contactor once the tractive side has charged through the resistor
-		float packVoltage = batt->sum_pack_voltage / 10.0f;
+		float packVoltage = batt->sum_pack_voltage / 100.0f;
 
 		if (!precharge_command) {
 			precharge_state = PRECHARGE_IDLE;
