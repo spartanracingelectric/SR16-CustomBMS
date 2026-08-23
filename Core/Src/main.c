@@ -100,7 +100,7 @@ int main(void)
     TimerPacket cycleTimeCap;
     TimerPacket canReconnection;
 
-    batteryModule modPackInfo;
+    batteryModule modPackInfo = {0};
 	CANMessage msg;
 	uint8_t safetyFaults = 0;
 	uint8_t safetyWarnings = 0;

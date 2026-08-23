@@ -8,6 +8,7 @@
 	//latched once precharge completes, so a voltage sag under load cannot re-close
 	//the precharge relay onto an already closed contactor
 	static uint8_t precharge_state = PRECHARGE_IDLE;
+	static uint32_t precharge_start_ms = 0;
 
 	void ReadHVInput(batteryModule *batt) {
 		uint32_t adcValue = 0;
@@ -36,14 +37,23 @@
 
 		//the VCU asks for precharge over CAN, the BMS closes the precharge relay, then
 		//hands over to the contactor once the tractive side has charged through the resistor
+		float packVoltage = batt->sum_pack_voltage / 10.0f;
+
 		if (!precharge_command) {
 			precharge_state = PRECHARGE_IDLE;
 		}
 		else if (precharge_state == PRECHARGE_IDLE) {
 			precharge_state = PRECHARGE_ACTIVE;
+			precharge_start_ms = HAL_GetTick();
 		}
-		else if (precharge_state == PRECHARGE_ACTIVE && batt->tractive_voltage >= PRECHARGE_DONE_VOLTAGE) {
+		else if (precharge_state == PRECHARGE_ACTIVE
+			  && packVoltage >= PRECHARGE_MIN_PACK_V
+			  && batt->tractive_voltage >= packVoltage * PRECHARGE_DONE_RATIO) {
 			precharge_state = PRECHARGE_DONE;	//stays here until the VCU drops the request
+		}
+		else if (precharge_state == PRECHARGE_ACTIVE
+			  && (HAL_GetTick() - precharge_start_ms) >= PRECHARGE_TIMEOUT_MS) {
+			precharge_state = PRECHARGE_FAULT;
 		}
 
 		batt->precharge_status = (precharge_state == PRECHARGE_DONE);
