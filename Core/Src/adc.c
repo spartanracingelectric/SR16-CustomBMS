@@ -19,8 +19,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "adc.h"
-#include "stdio.h"
-#include "usart.h"
 
 /* USER CODE BEGIN 0 */
 
@@ -37,7 +35,7 @@ void MX_ADC1_Init(void)
 
   /* USER CODE END ADC1_Init 0 */
 
-
+  ADC_ChannelConfTypeDef sConfig = {0};
 
   /* USER CODE BEGIN ADC1_Init 1 */
 
@@ -46,7 +44,7 @@ void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
   hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
@@ -59,22 +57,22 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-//  sConfig.Channel = ADC_CHANNEL_VREFINT;
-//  sConfig.Rank = ADC_REGULAR_RANK_1;
-//  sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
-//  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-//
-//  /** Configure Regular Channel
-//  */
-//  sConfig.Channel = ADC_CHANNEL_15;
-//  sConfig.Rank = ADC_REGULAR_RANK_2;
-//  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_15;
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
@@ -110,7 +108,7 @@ void MX_ADC2_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_13;
+  sConfig.Channel = ADC_CHANNEL_12;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
@@ -190,9 +188,10 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC1_CLK_DISABLE();
 
     /**ADC1 GPIO Configuration
+    PC4     ------> ADC1_IN14
     PC5     ------> ADC1_IN15
     */
-    HAL_GPIO_DeInit(MCU_ADC_VSENSE_GPIO_Port, MCU_ADC_VSENSE_Pin);
+    HAL_GPIO_DeInit(GPIOC, MCU_ADC_TRACTIVE_VSENSE_Pin|MCU_ADC_VSENSE_Pin);
 
     /* ADC1 interrupt Deinit */
   /* USER CODE BEGIN ADC1:ADC1_2_IRQn disable */

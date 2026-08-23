@@ -53,13 +53,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LTC_nCS_GPIO_Port, LTC_nCS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, MCU_SHUTDOWN_SIGNAL_Pin|MCU_PRECHARGE_SIGNAL_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(MCU_HEARTBEAT_LED_GPIO_Port, MCU_HEARTBEAT_LED_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, MCU_PRECHARGE_SIGNAL_Pin|MCU_CONTACTOR_SIGNAL_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, MCU_HEARTBEAT_LED_Pin|MCU_CONTACTOR_SIGNAL_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LTC_nCS_Pin */
   GPIO_InitStruct.Pin = LTC_nCS_Pin;
@@ -68,26 +65,19 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LTC_nCS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : MCU_SHUTDOWN_SIGNAL_Pin */
-  GPIO_InitStruct.Pin = MCU_SHUTDOWN_SIGNAL_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(MCU_SHUTDOWN_SIGNAL_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : MCU_HEARTBEAT_LED_Pin */
-  GPIO_InitStruct.Pin = MCU_HEARTBEAT_LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(MCU_HEARTBEAT_LED_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : MCU_PRECHARGE_SIGNAL_Pin MCU_CONTACTOR_SIGNAL_Pin */
-  GPIO_InitStruct.Pin = MCU_PRECHARGE_SIGNAL_Pin|MCU_CONTACTOR_SIGNAL_Pin;
+  /*Configure GPIO pins : MCU_SHUTDOWN_SIGNAL_Pin MCU_PRECHARGE_SIGNAL_Pin */
+  GPIO_InitStruct.Pin = MCU_SHUTDOWN_SIGNAL_Pin|MCU_PRECHARGE_SIGNAL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : MCU_HEARTBEAT_LED_Pin MCU_CONTACTOR_SIGNAL_Pin */
+  GPIO_InitStruct.Pin = MCU_HEARTBEAT_LED_Pin|MCU_CONTACTOR_SIGNAL_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 }
 
