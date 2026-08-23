@@ -12,6 +12,9 @@
 #define PRECHARGE_MIN_PACK_V 	60.0f
 #define PRECHARGE_TIMEOUT_MS 	5000
 
+#define VREFINT_CALIBRATION_ADC_RAW_COUNT 16
+#define VREFINT_CALIBRATION_SUPPLY_POWER_MV 3300
+
 typedef enum {
 	PRECHARGE_IDLE = 0,	//no request from the VCU, both outputs open
 	PRECHARGE_ACTIVE,	//precharge relay closed, waiting for the tractive side to charge

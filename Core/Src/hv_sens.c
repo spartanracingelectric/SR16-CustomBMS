@@ -16,6 +16,8 @@
 
 		adcValue = readADCChannel(ADC_CHANNEL_15);
 		vRef = getVref();
+
+		vRef = 3.3; // WORK AROUND SINCE VREF IS NOT WORKING AND IS CHANGING
 //		printf("adcValue:%d\n", adcValue);
 
 		//calculate voltage based on  resolution and gain on opamp, voltage divider ratio
@@ -57,10 +59,10 @@
 		}
 
 		batt->precharge_status = (precharge_state == PRECHARGE_DONE);
-		HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin,
-						  (precharge_state == PRECHARGE_ACTIVE) ? GPIO_PIN_SET : GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(MCU_CONTACTOR_SIGNAL_GPIO_Port, MCU_CONTACTOR_SIGNAL_Pin,
-						  (precharge_state == PRECHARGE_DONE)   ? GPIO_PIN_SET : GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin,
+//						  (precharge_state == PRECHARGE_ACTIVE) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(MCU_CONTACTOR_SIGNAL_GPIO_Port, MCU_CONTACTOR_SIGNAL_Pin,
+//						  (precharge_state == PRECHARGE_DONE)   ? GPIO_PIN_SET : GPIO_PIN_RESET);
 	}
 
 	void getSumPackVoltage(batteryModule *batt){

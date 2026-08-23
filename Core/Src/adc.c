@@ -21,7 +21,7 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "hv_sense.h"
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc1;
@@ -257,7 +257,7 @@ uint32_t readADCChannel(uint32_t channel)
 float getVref()
 {
 	uint32_t adc_val_vref = readADCChannel(ADC_CHANNEL_VREFINT);
-    float Vref = (VREFINT_CAL * ADC_RESOLUTION) / (float)adc_val_vref;
+    float Vref = (VREFINT_CALIBRATION_ADC_RAW_COUNT * VREFINT_CALIBRATION_SUPPLY_POWER_MV) / (float)adc_val_vref;
 //    printf("vref:%f\n", Vref);
     return Vref;
 }
