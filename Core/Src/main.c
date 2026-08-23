@@ -133,6 +133,11 @@ int main(void)
   MX_CAN1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+#if PRECHARGE_PIN_TEST
+    //bench test: assert precharge right after the GPIOs come up, ahead of the LTC startup
+    //delay, so the signal is present for the whole time the BMS is powered
+    HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin, GPIO_PIN_SET);
+#endif
   CAN_SettingsInit(&msg);  // Start CAN at 0x00
     // Start timer
     GpioTimePacket_Init(&tp_led_heartbeat, MCU_HEARTBEAT_LED_GPIO_Port,

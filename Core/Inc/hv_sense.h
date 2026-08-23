@@ -12,6 +12,12 @@
 #define PRECHARGE_MIN_PACK_V 	60.0f
 #define PRECHARGE_TIMEOUT_MS 	5000
 
+//BENCH TEST ONLY. 1 = hold MCU_PRECHARGE_SIGNAL asserted for as long as the BMS is
+//powered, so the precharge output can be probed without a VCU on the bus. The contactor
+//output stays open and the VCU precharge request is ignored while this is set.
+//Set back to 0 before running on a live pack.
+#define PRECHARGE_PIN_TEST 		1
+
 typedef enum {
 	PRECHARGE_IDLE = 0,	//no request from the VCU, both outputs open
 	PRECHARGE_ACTIVE,	//precharge relay closed, waiting for the tractive side to charge

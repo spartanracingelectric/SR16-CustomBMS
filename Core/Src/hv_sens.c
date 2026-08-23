@@ -8,7 +8,9 @@
 	//latched once precharge completes, so a voltage sag under load cannot re-close
 	//the precharge relay onto an already closed contactor
 	static uint8_t precharge_state = PRECHARGE_IDLE;
+#if !PRECHARGE_PIN_TEST
 	static uint32_t precharge_start_ms = 0;
+#endif
 
 	void ReadHVInput(batteryModule *batt) {
 		uint32_t adcValue = 0;
@@ -35,6 +37,14 @@
 		float tractiveAMCOut = tractiveADCVolt / GAIN_TLV9001;
 		batt->tractive_voltage = (tractiveAMCOut) * (DIVIDER_RATIO);
 
+#if PRECHARGE_PIN_TEST
+		//bench test: drive the precharge output high and leave the contactor open, so the
+		//pin and its driver can be checked with nothing else on the bus
+		precharge_state = PRECHARGE_IDLE;
+		batt->precharge_status = 0;
+		HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(MCU_CONTACTOR_SIGNAL_GPIO_Port, MCU_CONTACTOR_SIGNAL_Pin, GPIO_PIN_RESET);
+#else
 		//the VCU asks for precharge over CAN, the BMS closes the precharge relay, then
 		//hands over to the contactor once the tractive side has charged through the resistor
 		float packVoltage = batt->sum_pack_voltage / 10.0f;
@@ -61,6 +71,7 @@
 						  (precharge_state == PRECHARGE_ACTIVE) ? GPIO_PIN_SET : GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(MCU_CONTACTOR_SIGNAL_GPIO_Port, MCU_CONTACTOR_SIGNAL_Pin,
 						  (precharge_state == PRECHARGE_DONE)   ? GPIO_PIN_SET : GPIO_PIN_RESET);
+#endif
 	}
 
 	void getSumPackVoltage(batteryModule *batt){
