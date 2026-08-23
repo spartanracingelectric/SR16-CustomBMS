@@ -43,11 +43,15 @@ extern CAN_HandleTypeDef hcan1;
 #define CAN_ID_SOC 					0x621
 #define CAN_ID_BALANCE_STATUS		0x623
 #define CAN_ID_PRECHARGE			0x625
+//IDs the BMS receives, not sends
+#define CAN_ID_BALANCE_CMD			0x604
+#define CAN_ID_PRECHARGE_CMD		0x605
 #define CAN_BYTE_NUM				8
 #define CAN_MESSAGE_NUM_VOLTAGE 	NUM_CELLS * 2 / CAN_BYTE_NUM
 #define CAN_MESSAGE_NUM_THERMISTOR 	NUM_THERM_TOTAL / CAN_BYTE_NUM
 
 extern uint8_t can_skip_flag;
+extern volatile uint8_t precharge_command;	//1 once the VCU commands precharge over CAN_ID_PRECHARGE_CMD
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);

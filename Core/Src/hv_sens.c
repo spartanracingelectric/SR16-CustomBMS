@@ -1,8 +1,13 @@
 #include <hv_sense.h>
 #include "adc.h"
+#include "can.h"
 #include "main.h"
 #include <stdio.h>
 #include "usart.h"
+
+	//latched once precharge completes, so a voltage sag under load cannot re-close
+	//the precharge relay onto an already closed contactor
+	static uint8_t precharge_state = PRECHARGE_IDLE;
 
 	void ReadHVInput(batteryModule *batt) {
 		uint32_t adcValue = 0;
@@ -29,13 +34,23 @@
 		float tractiveAMCOut = tractiveADCVolt / GAIN_TLV9001;
 		batt->tractive_voltage = (tractiveAMCOut) * (DIVIDER_RATIO);
 
-		if (batt->tractive_voltage >= 400.0f) {
-			batt->precharge_status = 1;
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-		} else {
-			batt->precharge_status = 0;
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
+		//the VCU asks for precharge over CAN, the BMS closes the precharge relay, then
+		//hands over to the contactor once the tractive side has charged through the resistor
+		if (!precharge_command) {
+			precharge_state = PRECHARGE_IDLE;
 		}
+		else if (precharge_state == PRECHARGE_IDLE) {
+			precharge_state = PRECHARGE_ACTIVE;
+		}
+		else if (precharge_state == PRECHARGE_ACTIVE && batt->tractive_voltage >= PRECHARGE_DONE_VOLTAGE) {
+			precharge_state = PRECHARGE_DONE;	//stays here until the VCU drops the request
+		}
+
+		batt->precharge_status = (precharge_state == PRECHARGE_DONE);
+		HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin,
+						  (precharge_state == PRECHARGE_ACTIVE) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(MCU_CONTACTOR_SIGNAL_GPIO_Port, MCU_CONTACTOR_SIGNAL_Pin,
+						  (precharge_state == PRECHARGE_DONE)   ? GPIO_PIN_SET : GPIO_PIN_RESET);
 	}
 
 	void getSumPackVoltage(batteryModule *batt){

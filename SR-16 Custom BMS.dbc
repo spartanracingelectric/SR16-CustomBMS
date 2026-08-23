@@ -26,6 +26,12 @@ SG_ BMS_Sum_Pack_Voltage : 48|16@1+ (0.01,0) [0|655.35] "V" Custom_BMS
 BO_ 1540 BMS_Balance_Enable: 1 Custom_BMS
 SG_ BMS_Balance_Enable : 0|1@1- (1,0) [0|1] " " Custom_BMS
 
+BO_ 1541 BMS_Precharge_Command: 1 Custom_BMS
+SG_ BMS_Precharge_Command : 0|1@1- (1,0) [0|1] " " Custom_BMS
+
+BO_ 1573 BMS_Precharge_Status: 1 Custom_BMS
+SG_ BMS_Precharge_Status : 0|1@1- (1,0) [0|1] " " Custom_BMS
+
 BO_ 1569 BMS_State_of_Charge: 7 Custom_BMS
 SG_ BMS_Capacity : 0|16@1+ (1,0) [0|65535] "mAh" Custom_BMS
 SG_ BMS_Percent : 16|8@1+ (1,0) [0|255] "Percent" Custom_BMS

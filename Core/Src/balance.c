@@ -39,7 +39,7 @@ void Balance_init(uint16_t *balanceStatus){
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
 //    printf("fifo 0 callback\n");
     if (HAL_CAN_GetRxMessage(hcan1, CAN_RX_FIFO0, &rxHeader, rxData) == HAL_OK) {
-        if (rxHeader.StdId == 0x604) {  // CAN message from charger
+        if (rxHeader.StdId == CAN_ID_BALANCE_CMD) {  // CAN message from charger
             uint8_t balanceCommand = rxData[0]; // see the data bit on CAN
 
             // change the BALANCE flag to enable balance
@@ -50,6 +50,17 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan1) {
             	balance = 0;  // disable balance
             	balance_finish = 1;
 //                printf("BALANCE disabled by CAN message.\n");
+            }
+        }
+        else if (rxHeader.StdId == CAN_ID_PRECHARGE_CMD) {  // CAN message from the VCU
+            uint8_t prechargeCommand = rxData[0]; // see the data bit on CAN
+
+            if (prechargeCommand == 1) {
+            	precharge_command = 1;  // VCU wants precharge started
+//                printf("PRECHARGE requested by CAN message.\n");
+            } else if (prechargeCommand == 0) {
+            	precharge_command = 0;  // VCU dropped the request
+//                printf("PRECHARGE cleared by CAN message.\n");
             }
         }
     }

@@ -54,17 +54,22 @@ void MX_CAN1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN1_Init 2 */
-  CAN_FilterTypeDef sFilterConfig;
-	  sFilterConfig.FilterBank = 0;
+  CAN_FilterTypeDef sFilterConfig = {0};
 	  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 	  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-	  sFilterConfig.FilterIdHigh = 0x604 << 5;  // Recieve only ID 0x604
 	  sFilterConfig.FilterIdLow = 0x0000;
 	  sFilterConfig.FilterMaskIdHigh = 0xFFF << 5;  // only accept complete match
 	  sFilterConfig.FilterMaskIdLow = 0x0000;
 	  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
 	  sFilterConfig.FilterActivation = ENABLE;
+	  sFilterConfig.SlaveStartFilterBank = 14;  // banks 0-13 are CAN1's, 14-27 are CAN2's
 
+	  sFilterConfig.FilterBank = 0;
+	  sFilterConfig.FilterIdHigh = CAN_ID_BALANCE_CMD << 5;  // Recieve only ID 0x604
+  HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig);
+
+	  sFilterConfig.FilterBank = 1;
+	  sFilterConfig.FilterIdHigh = CAN_ID_PRECHARGE_CMD << 5;  // Recieve only ID 0x605
   HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig);
   /* USER CODE END CAN1_Init 2 */
 
@@ -144,6 +149,7 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 /* USER CODE BEGIN 1 */
 
 uint8_t can_skip_flag = 0;
+volatile uint8_t precharge_command = 0;	//set in the CAN RX interrupt, read from the main loop
 
 HAL_StatusTypeDef CAN_Start() { return HAL_CAN_Start(&hcan1); }
 
