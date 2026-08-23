@@ -363,11 +363,7 @@ void CAN_Send_Precharge_Status(CANMessage *buffer, batteryModule *batt) {
 	Set_CAN_Id(buffer, CAN_ID);
 	buffer->TxHeader.DLC = 1;
 
-	if(batt->precharge_status) {
-		buffer->prechargeBuffer[0] = 0x01;
-	} else {
-		buffer->prechargeBuffer[0] = 0x00;
-	}
+	buffer->prechargeBuffer[0] = batt->precharge_status;
 
 	CAN_Send(buffer);
 	buffer->TxHeader.DLC = 8;

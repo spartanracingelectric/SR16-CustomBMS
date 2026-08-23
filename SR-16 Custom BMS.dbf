@@ -34,7 +34,7 @@
 [END_MSG]
 
 [START_MSG] BMS_Precharge_Status,1573,1,1,1,S,Custom_BMS
-[START_SIGNALS] BMS_Precharge_Status,1,1,0,B,1,0,1,0,1, ,,Custom_BMS
+[START_SIGNALS] BMS_Precharge_Status,8,1,0,U,255,0,1,0,1,,,Custom_BMS
 [END_MSG]
 
 [START_MSG] BMS_State_of_Charge,1569,7,3,1,S,Custom_BMS
