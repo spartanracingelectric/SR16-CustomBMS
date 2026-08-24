@@ -190,7 +190,6 @@ int main(void)
     while (1) {
     /* USER CODE END WHILE */
 
-
     /* USER CODE BEGIN 3 */
 		GpioFixedToggle(&tp_led_heartbeat, LED_HEARTBEAT_DELAY_MS);
 		if (TimerPacket_FixedPulse(&cycleTimeCap)) {

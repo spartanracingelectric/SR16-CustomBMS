@@ -50,19 +50,19 @@
 		}
 		else if (precharge_state == PRECHARGE_ACTIVE
 			  && packVoltage >= PRECHARGE_MIN_PACK_V
-			  && batt->tractive_voltage >= packVoltage * PRECHARGE_DONE_RATIO) {
+			  && (batt->hvsens_pack_voltage / 100) >= packVoltage * PRECHARGE_DONE_RATIO) {
 			precharge_state = PRECHARGE_DONE;	//stays here until the VCU drops the request
 		}
-		else if (precharge_state == PRECHARGE_ACTIVE
-			  && (HAL_GetTick() - precharge_start_ms) >= PRECHARGE_TIMEOUT_MS) {
-			precharge_state = PRECHARGE_FAULT;
-		}
+//		else if (precharge_state == PRECHARGE_ACTIVE
+//			  && (HAL_GetTick() - precharge_start_ms) >= PRECHARGE_TIMEOUT_MS) {
+//			precharge_state = PRECHARGE_FAULT;
+//		}
 
-		batt->precharge_status = (precharge_state == PRECHARGE_DONE);
-//		HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin,
-//						  (precharge_state == PRECHARGE_ACTIVE) ? GPIO_PIN_SET : GPIO_PIN_RESET);
-//		HAL_GPIO_WritePin(MCU_CONTACTOR_SIGNAL_GPIO_Port, MCU_CONTACTOR_SIGNAL_Pin,
-//						  (precharge_state == PRECHARGE_DONE)   ? GPIO_PIN_SET : GPIO_PIN_RESET);
+		batt->precharge_status = precharge_state;
+		HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin,
+						  (precharge_state == PRECHARGE_ACTIVE) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(MCU_CONTACTOR_SIGNAL_GPIO_Port, MCU_CONTACTOR_SIGNAL_Pin,
+						  (precharge_state == PRECHARGE_DONE)   ? GPIO_PIN_SET : GPIO_PIN_RESET);
 	}
 
 	void getSumPackVoltage(batteryModule *batt){
