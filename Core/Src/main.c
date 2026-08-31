@@ -176,8 +176,8 @@ int main(void)
 //				HAL_Delay(1); //this delay is for stablize mux
     Balance_init(modPackInfo.balance_status);
 
-    ReadHVInput(&modPackInfo);
     getSumPackVoltage(&modPackInfo);
+    ReadHVInput(&modPackInfo, safetyFaults);
 
 	SOC_getInitialCharge(&modPackInfo);
 	uint32_t prev_soc_time = HAL_GetTick();
@@ -234,15 +234,20 @@ int main(void)
 //				printf("Temp[%d]: %d\n",i, modPackInfo.cell_temp[i]);
 //			}
 //			printf("pack volt start\n");
-			ReadHVInput(&modPackInfo);
 			getSumPackVoltage(&modPackInfo);
+
+            Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings);
+			Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings);
+			if (safetyFaults != 0) {
+				SendFaultSignal();
+			} else {
+				ClearFaultSignal();
+			}
+			ReadHVInput(&modPackInfo, safetyFaults);
 //			printf("pack volt end\n");
 
 			SOC_updateCharge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
 			prev_soc_time = HAL_GetTick();
-			//getting the summary of all cells in the pack
-            Cell_Voltage_Fault(	&modPackInfo, &safetyFaults, &safetyWarnings);
-			Cell_Temperature_Fault(&modPackInfo, &safetyFaults, &safetyWarnings);
 //			Passive balancing is called unless a fault has occurred
 //			if (safetyFaults == 0 && BALANCE
 //					&& ((modPackInfo.cell_volt_highest

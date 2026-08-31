@@ -10,7 +10,7 @@
 	static uint8_t precharge_state = PRECHARGE_IDLE;
 	static uint32_t precharge_start_ms = 0;
 
-	void ReadHVInput(batteryModule *batt) {
+	void ReadHVInput(batteryModule *batt, uint8_t safetyFaults) {
 		uint32_t adcValue = 0;
 		float vRef = 0;
 
@@ -39,7 +39,10 @@
 		//hands over to the contactor once the tractive side has charged through the resistor
 		float packVoltage = batt->sum_pack_voltage / 100.0f;
 
-		if (!precharge_command) {
+		if (safetyFaults != 0) {
+			precharge_state = PRECHARGE_FAULT;
+		}
+		else if (!precharge_command) {
 			precharge_state = PRECHARGE_IDLE;
 		}
 		else if (precharge_state == PRECHARGE_IDLE) {

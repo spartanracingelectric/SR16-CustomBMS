@@ -1,7 +1,6 @@
 #include "safety.h"
 #include "main.h"
 #include "stdio.h"
-#include "gpio.h"
 // ! Fault Thresholds
 
 uint8_t high_volt_fault_lock = 0;
@@ -38,7 +37,6 @@ void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *war
 				high_volt_fault_lock = 1;
 				*warnings &= ~WARNING_BIT_HIGH_VOLT;
 				*fault |= FAULT_BIT_HIGH_VOLT;
-				SendFaultSignal();
 			}
 			else {
 				high_volt_hysteresis++;
@@ -52,7 +50,6 @@ void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *war
 				high_volt_fault_lock = 0;
 				*warnings &= ~WARNING_BIT_HIGH_VOLT;
 				*fault &= ~FAULT_BIT_HIGH_VOLT;
-				ClearFaultSignal();
 			}
 		}
 
@@ -66,7 +63,6 @@ void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *war
 				low_volt_fault_lock = 1;
 				*warnings &= ~WARNING_BIT_LOW_VOLT;
 				*fault |= FAULT_BIT_LOW_VOLT;
-				SendFaultSignal();
 			} else {
 				low_volt_hysteresis++;
 			}
@@ -76,7 +72,6 @@ void Cell_Voltage_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t *war
 				low_volt_hysteresis = 0;
 				*warnings &= ~WARNING_BIT_LOW_VOLT;
 				*fault &= ~FAULT_BIT_LOW_VOLT;
-				ClearFaultSignal();
 			}
 		}
 }
@@ -112,7 +107,6 @@ void Cell_Temperature_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t 
 		if (high_temp_hysteresis > 2) {
 			*warnings &= ~WARNING_BIT_HIGH_TEMP;
 			*fault |= FAULT_BIT_HIGH_TEMP;
-			SendFaultSignal();
 		} else {
 			(high_temp_hysteresis)++;
 		}
@@ -121,7 +115,6 @@ void Cell_Temperature_Fault(struct batteryModule *batt, uint8_t *fault, uint8_t 
 			high_temp_hysteresis = 0;
 			*warnings &= ~WARNING_BIT_HIGH_TEMP;
 			*fault &= ~FAULT_BIT_HIGH_TEMP;
-			ClearFaultSignal();
 		}
 	}
 }

@@ -19,7 +19,7 @@ typedef enum {
 	PRECHARGE_FAULT
 } PrechargeState;
 
-void ReadHVInput(batteryModule *batt);
+void ReadHVInput(batteryModule *batt, uint8_t safetyFaults);
 
 void getSumPackVoltage(batteryModule *batt);
 

@@ -83,9 +83,7 @@ void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 2 */
 void SendFaultSignal() {
-    // Hardware fault output is intentionally disabled while BMS faults are simulated.
-    // Keep the shutdown signal in its cleared state even when a software fault is set.
-    HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(MCU_SHUTDOWN_SIGNAL_GPIO_Port, MCU_SHUTDOWN_SIGNAL_Pin, GPIO_PIN_SET);
 }
 
 void ClearFaultSignal() {
