@@ -135,10 +135,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 
     __HAL_RCC_GPIOC_CLK_ENABLE();
     /**ADC1 GPIO Configuration
-    PC4     ------> ADC1_IN14
     PC5     ------> ADC1_IN15
     */
-    GPIO_InitStruct.Pin = MCU_ADC_TRACTIVE_VSENSE_Pin|MCU_ADC_VSENSE_Pin;
+    GPIO_InitStruct.Pin = MCU_ADC_VSENSE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -188,10 +187,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC1_CLK_DISABLE();
 
     /**ADC1 GPIO Configuration
-    PC4     ------> ADC1_IN14
     PC5     ------> ADC1_IN15
     */
-    HAL_GPIO_DeInit(GPIOC, MCU_ADC_TRACTIVE_VSENSE_Pin|MCU_ADC_VSENSE_Pin);
+    HAL_GPIO_DeInit(GPIOC, MCU_ADC_VSENSE_Pin);
 
     /* ADC1 interrupt Deinit */
   /* USER CODE BEGIN ADC1:ADC1_2_IRQn disable */

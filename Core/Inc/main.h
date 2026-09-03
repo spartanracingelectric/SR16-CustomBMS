@@ -73,7 +73,6 @@ typedef struct batteryModule {
     uint32_t soc; // microamps!!!!!
     uint32_t current;
     uint16_t dew_point[NUM_DEVICES];
-	float tractive_voltage;
 	uint8_t precharge_status;
 } batteryModule;
 
@@ -113,8 +112,6 @@ void Error_Handler(void);
 #define Shunt_PIN_FOR_2A_GPIO_Port GPIOC
 #define LTC_nCS_Pin GPIO_PIN_4
 #define LTC_nCS_GPIO_Port GPIOA
-#define MCU_ADC_TRACTIVE_VSENSE_Pin GPIO_PIN_4
-#define MCU_ADC_TRACTIVE_VSENSE_GPIO_Port GPIOC
 #define MCU_ADC_VSENSE_Pin GPIO_PIN_5
 #define MCU_ADC_VSENSE_GPIO_Port GPIOC
 #define MCU_SHUTDOWN_SIGNAL_Pin GPIO_PIN_1

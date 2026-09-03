@@ -17,8 +17,8 @@
 
 typedef enum {
 	PRECHARGE_IDLE = 0,	//no request from the VCU, both outputs open
-	PRECHARGE_ACTIVE,	//precharge relay closed, waiting for the tractive side to charge
-	PRECHARGE_DONE,		//tractive side charged, contactor closed
+	PRECHARGE_ACTIVE,	//precharge relay closed waiting for the 90% precharge
+	PRECHARGE_DONE,		//BMS connector voltage reached 90% of pack voltage so it finished
 	PRECHARGE_FAULT
 } PrechargeState;
 

@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include "usart.h"
 
-	//latched once precharge completes, so a voltage sag under load cannot re-close
-	//the precharge relay onto an already closed contactor
 	static uint8_t precharge_state = PRECHARGE_IDLE;
 	static uint32_t precharge_start_ms = 0;
 
@@ -32,15 +30,8 @@
 			batt->hvsens_pack_voltage = 0;
 		}
 
-		uint32_t tractiveADC = readADCChannel(ADC_CHANNEL_14);
-		float tractiveADCVolt = ((float)tractiveADC / ADC_RESOLUTION) * vRef;
-		float tractiveAMCOut = tractiveADCVolt / GAIN_TLV9001;
-		batt->tractive_voltage = (tractiveAMCOut) * (DIVIDER_RATIO);
-
-		//the VCU asks for precharge over CAN, the BMS closes the precharge relay, then
-		//hands over to the contactor once the tractive side has charged through the resistor
-		float packVoltage = batt->sum_pack_voltage / 100.0f;
-
+		// hvsens_pack_voltage is measured at the BMS HV connector.  It is the
+		// precharge/load-side voltage; precharge is complete at 90% of pack voltage
 		if (!precharge_command) {
 			precharge_state = PRECHARGE_IDLE;
 		}
@@ -49,14 +40,14 @@
 			precharge_start_ms = HAL_GetTick();
 		}
 		else if (precharge_state == PRECHARGE_ACTIVE
-			  && packVoltage >= PRECHARGE_MIN_PACK_V
-			  && (batt->hvsens_pack_voltage / 100) >= packVoltage * PRECHARGE_DONE_RATIO) {
+			  && batt->sum_pack_voltage >= PRECHARGE_MIN_PACK_V * 100.0f
+			  && batt->hvsens_pack_voltage >= batt->sum_pack_voltage * PRECHARGE_DONE_RATIO) {
 			precharge_state = PRECHARGE_DONE;	//stays here until the VCU drops the request
 		}
-//		else if (precharge_state == PRECHARGE_ACTIVE
-//			  && (HAL_GetTick() - precharge_start_ms) >= PRECHARGE_TIMEOUT_MS) {
-//			precharge_state = PRECHARGE_FAULT;
-//		}
+		else if (precharge_state == PRECHARGE_ACTIVE
+			  && (HAL_GetTick() - precharge_start_ms) >= PRECHARGE_TIMEOUT_MS) {
+			precharge_state = PRECHARGE_FAULT;
+		}
 
 		batt->precharge_status = precharge_state;
 		HAL_GPIO_WritePin(MCU_PRECHARGE_SIGNAL_GPIO_Port, MCU_PRECHARGE_SIGNAL_Pin,

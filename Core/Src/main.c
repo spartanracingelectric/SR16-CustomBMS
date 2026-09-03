@@ -176,8 +176,8 @@ int main(void)
 //				HAL_Delay(1); //this delay is for stablize mux
     Balance_init(modPackInfo.balance_status);
 
-    ReadHVInput(&modPackInfo);
     getSumPackVoltage(&modPackInfo);
+    ReadHVInput(&modPackInfo);
 
 	SOC_getInitialCharge(&modPackInfo);
 	uint32_t prev_soc_time = HAL_GetTick();
@@ -235,8 +235,8 @@ int main(void)
 //				printf("Temp[%d]: %d\n",i, modPackInfo.cell_temp[i]);
 //			}
 //			printf("pack volt start\n");
-			ReadHVInput(&modPackInfo);
 			getSumPackVoltage(&modPackInfo);
+			ReadHVInput(&modPackInfo);
 //			printf("pack volt end\n");
 
 			SOC_updateCharge(&modPackInfo,(HAL_GetTick() - prev_soc_time));
