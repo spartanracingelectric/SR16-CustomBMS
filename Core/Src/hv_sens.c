@@ -40,7 +40,6 @@
 			precharge_start_ms = HAL_GetTick();
 		}
 		else if (precharge_state == PRECHARGE_ACTIVE
-			  && batt->sum_pack_voltage >= PRECHARGE_MIN_PACK_V * 100.0f
 			  && batt->hvsens_pack_voltage >= batt->sum_pack_voltage * PRECHARGE_DONE_RATIO) {
 			precharge_state = PRECHARGE_DONE;	//stays here until the VCU drops the request
 		}
