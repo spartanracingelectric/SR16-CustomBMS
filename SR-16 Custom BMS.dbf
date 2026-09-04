@@ -5,7 +5,7 @@
 [PROTOCOL] CAN
 
 [BUSMASTER_VERSION] [3.2.2]
-[NUMBER_OF_MESSAGES] 48
+[NUMBER_OF_MESSAGES] 49
 
 [START_MSG] BMS_Safety_Checker,1536,8,15,1,S,Custom_BMS
 [START_SIGNALS] BMS_Cell_High_Temp_Warning,1,1,2,B,1,0,1,0,1, ,,Custom_BMS
@@ -35,6 +35,10 @@
 
 [START_MSG] BMS_Precharge_Status,1573,1,1,1,S,Custom_BMS
 [START_SIGNALS] BMS_Precharge_Status,8,1,0,U,255,0,1,0,1,,,Custom_BMS
+[END_MSG]
+
+[START_MSG] BMS_HVsense_Debug,1574,2,1,1,S,Custom_BMS
+[START_SIGNALS] BMS_HVsense_ADC_Raw,16,1,0,U,4095,0,1,0,1,counts,,Custom_BMS
 [END_MSG]
 
 [START_MSG] BMS_State_of_Charge,1569,7,3,1,S,Custom_BMS

@@ -13,6 +13,7 @@
 		float vRef = 0;
 
 		adcValue = readADCChannel(ADC_CHANNEL_15);
+		batt->hvsens_adc_raw = (uint16_t)adcValue;
 		vRef = getVref();
 
 		vRef = 3.3; // WORK AROUND SINCE VREF IS NOT WORKING AND IS CHANGING

@@ -273,6 +273,7 @@ int main(void)
 			CAN_Send_SOC(&msg, &modPackInfo, MAX_BATTERY_CAPACITY);
 			CAN_Send_Balance_Status(&msg, modPackInfo.balance_status);
       CAN_Send_Precharge_Status(&msg, &modPackInfo);
+			CAN_Send_HVSense_Debug(&msg, &modPackInfo);
 		}
     }
   /* USER CODE END 3 */

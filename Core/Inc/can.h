@@ -43,6 +43,7 @@ extern CAN_HandleTypeDef hcan1;
 #define CAN_ID_SOC 					0x621
 #define CAN_ID_BALANCE_STATUS		0x623
 #define CAN_ID_PRECHARGE			0x625
+#define CAN_ID_HVSENSE_DEBUG		0x626
 //IDs the BMS receives, not sends
 #define CAN_ID_BALANCE_CMD			0x604
 #define CAN_ID_PRECHARGE_CMD		0x605
@@ -71,6 +72,7 @@ void CAN_Send_Safety_Checker(CANMessage *ptr, struct batteryModule *batt, uint8_
 void CAN_Send_SOC(CANMessage *ptr, batteryModule *batt, uint16_t max_capacity);
 void CAN_Send_Balance_Status(struct CANMessage *ptr, uint16_t *balance_status);
 void CAN_Send_Precharge_Status(CANMessage *buffer, struct batteryModule *batt);
+void CAN_Send_HVSense_Debug(CANMessage *buffer, struct batteryModule *batt);
 //void CAN_Send_Sensor(struct CANMessage *ptr, batteryModule *batt);
 /* USER CODE END Prototypes */
 

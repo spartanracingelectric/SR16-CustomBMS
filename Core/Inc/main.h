@@ -68,6 +68,7 @@ typedef struct batteryModule {
 	uint16_t cell_temp_highest;
 	uint16_t sum_pack_voltage;
 	uint16_t hvsens_pack_voltage;
+	uint16_t hvsens_adc_raw;
 	uint16_t read_auxreg[NUM_AUXES];
 	uint16_t balance_status[NUM_DEVICES];
     uint32_t soc; // microamps!!!!!
@@ -84,8 +85,9 @@ typedef struct CANMessage{
     uint8_t summaryBuffer[8];
     uint8_t safetyBuffer[8];
     uint8_t socBuffer[8];
-    uint8_t balanceStatus[8];
+	uint8_t balanceStatus[8];
 	uint8_t prechargeBuffer[8];
+	uint8_t hvsenseDebugBuffer[8];
 } CANMessage;
 
 /* USER CODE END ET */
