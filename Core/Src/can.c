@@ -191,6 +191,9 @@ HAL_StatusTypeDef CAN_Send(CANMessage *ptr) {
 	 else if (ptr->TxHeader.StdId == CAN_ID_PRECHARGE) {
 		dataPtr = (uint8_t *)ptr->prechargeBuffer;
 	}
+	 else if (ptr->TxHeader.StdId == CAN_ID_HVSENSE_DEBUG) {
+		dataPtr = (uint8_t *)ptr->hvsenseDebugBuffer;
+	}
 	return HAL_CAN_AddTxMessage(&hcan1, &ptr->TxHeader, dataPtr, &ptr->TxMailbox);
 }
 
@@ -364,6 +367,17 @@ void CAN_Send_Precharge_Status(CANMessage *buffer, batteryModule *batt) {
 	buffer->TxHeader.DLC = 1;
 
 	buffer->prechargeBuffer[0] = batt->precharge_status;
+
+	CAN_Send(buffer);
+	buffer->TxHeader.DLC = 8;
+}
+
+void CAN_Send_HVSense_Debug(CANMessage *buffer, batteryModule *batt) {
+	Set_CAN_Id(buffer, CAN_ID_HVSENSE_DEBUG);
+	buffer->TxHeader.DLC = 2;
+
+	buffer->hvsenseDebugBuffer[0] = batt->hvsens_adc_raw & 0xFF;
+	buffer->hvsenseDebugBuffer[1] = (batt->hvsens_adc_raw >> 8) & 0xFF;
 
 	CAN_Send(buffer);
 	buffer->TxHeader.DLC = 8;
