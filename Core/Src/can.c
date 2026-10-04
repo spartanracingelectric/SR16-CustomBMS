@@ -60,7 +60,7 @@ void MX_CAN1_Init(void)
 	  sFilterConfig.FilterIdLow = 0x0000;
 	  sFilterConfig.FilterMaskIdHigh = 0xFFF << 5;  // only accept complete match
 	  sFilterConfig.FilterMaskIdLow = 0x0000;
-	  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+	  sFilterConfig.FilterFIFOAssignment = CAN_FILTER_FIFO0;
 	  sFilterConfig.FilterActivation = ENABLE;
 	  sFilterConfig.SlaveStartFilterBank = 14;  // banks 0-13 are CAN1's, 14-27 are CAN2's
 
